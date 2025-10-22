@@ -1,0 +1,28 @@
+<template id="tmpl-pomodoro">
+  <div class="card">
+    <div class="pond-surface"></div>
+    <div class="pomodoro">
+      <div class="duck-stage">
+  <img class="duck" src="/src/assets/duck.png" alt="duck">
+      </div>
+
+      <div class="timer-display" id="time-display">25:00</div>
+
+      <div class="progress-wrap" aria-hidden>
+        <div class="progress" id="progress"></div>
+      </div>
+
+      <div class="controls">
+  <button type="button" id="start">Start</button>
+  <button type="button" id="pause" class="secondary">Pause</button>
+  <button type="button" id="reset" class="secondary">Reset</button>
+      </div>
+
+      <div class="durations">
+  <button type="button" data-min="15">15</button>
+  <button type="button" data-min="25" aria-pressed="true">25</button>
+  <button type="button" data-min="50">50</button>
+      </div>
+    </div>
+  </div>
+</template>

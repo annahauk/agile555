@@ -1,0 +1,22 @@
+.pomodoro{
+  display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;color:#053f3d
+}
+.timer-display{font-size:48px;font-weight:600;background:linear-gradient(180deg,rgba(255,255,255,0.85),rgba(255,255,255,0.6));padding:20px;border-radius:14px;min-width:180px}
+.controls{display:flex;gap:8px}
+.controls button{padding:8px 12px;border-radius:10px;border:none;background:var(--muted);color:white;font-weight:600;cursor:pointer}
+.controls button.secondary{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.25)}
+.progress-wrap{width:100%;height:12px;background:rgba(0,0,0,0.08);border-radius:10px;overflow:hidden}
+.progress{height:100%;background:linear-gradient(90deg,#ffcc66,#ffd88d);width:0%;transition:width 0.3s linear}
+
+/* duck container */
+.duck-stage{position:relative;height:80px;width:100%;overflow:hidden}
+.duck{position:absolute;left:8px;top:8px;width:64px;height:64px;transition:transform 0.3s linear}
+.duck.floating{animation:float 3s ease-in-out infinite}
+@keyframes float{
+  0%{transform:translateY(0) translateX(0)}
+  50%{transform:translateY(-10px) translateX(6px)}
+  100%{transform:translateY(0) translateX(0)}
+}
+
+.durations{display:flex;gap:6px;justify-content:center}
+.durations button{background:transparent;border:1px dashed rgba(0,0,0,0.06);padding:6px 8px;border-radius:8px}

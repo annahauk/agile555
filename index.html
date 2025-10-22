@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Pond - Pomodoro</title>
+    <link rel="stylesheet" href="/src/styles/global.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="brand">Study Pond</div>
+      <nav class="site-nav">
+        <button type="button" data-route="#/home" class="nav-btn">Home</button>
+        <button type="button" data-route="#/pomodoro" class="nav-btn">Pomodoro</button>
+        <button type="button" data-route="#/todo" class="nav-btn">To-Do</button>
+        <button type="button" data-route="#/notes" class="nav-btn">Notes</button>
+        <button type="button" data-route="#/affirmations" class="nav-btn">Affirmations</button>
+        <button type="button" data-route="#/music" class="nav-btn">Music</button>
+        <button type="button" data-route="#/journal" class="nav-btn">Journal</button>
+      </nav>
+    </header>
+
+    <main id="app" class="app-center">
+      <div id="view-root"></div>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

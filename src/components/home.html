@@ -1,0 +1,33 @@
+<template id="tmpl-home">
+  <div class="home-pond">
+    <svg class="pond-bg" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="g1" cx="30%" cy="30%">
+          <stop offset="0%" stop-color="#dff7f0" />
+          <stop offset="100%" stop-color="#8fd7c2" />
+        </radialGradient>
+      </defs>
+      <rect width="1200" height="600" fill="url(#g1)" />
+      <g fill="rgba(255,255,255,0.06)">
+        <ellipse cx="300" cy="200" rx="320" ry="120" />
+        <ellipse cx="900" cy="380" rx="360" ry="140" />
+      </g>
+    </svg>
+
+    <div class="ducks">
+      <img class="duck home-duck d1" src="/src/assets/duck.png" alt="duck">
+      <img class="duck home-duck d2" src="/src/assets/duck.png" alt="duck">
+      <img class="duck home-duck d3" src="/src/assets/duck.png" alt="duck">
+      <img class="duck home-duck d4" src="/src/assets/duck.png" alt="duck">
+    </div>
+
+    <div class="home-cta card">
+      <h1>Welcome to Study Pond</h1>
+      <p>Calm your study sessions. Select a tool from the top navigation to begin.</p>
+      <div class="home-buttons">
+        <button type="button" data-route="#/pomodoro" class="nav-btn">Start Pomodoro</button>
+        <button type="button" data-route="#/todo" class="nav-btn">Open To-Do</button>
+      </div>
+    </div>
+  </div>
+</template>
