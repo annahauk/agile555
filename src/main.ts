@@ -2,6 +2,7 @@ import { PomodoroTimer } from './scripts/timer'
 import '/src/styles/components/timer.css'
 import '/src/styles/components/nav.css'
 import '/src/styles/components/home.css'
+import { LsDb } from './lib/db'
 
 // Simple hash router
 type Route = '#/home' | '#/pomodoro' | '#/todo' | '#/notes' | '#/affirmations' | '#/music' | '#/journal'
@@ -148,3 +149,6 @@ await loadTemplates(['/src/components/home.html','/src/components/timer.html','/
 
 // initial navigation (default to home)
 navigate((window.location.hash as Route) || '#/home')
+
+let db = new LsDb("test");
+let db2 = new LsDb("test");
