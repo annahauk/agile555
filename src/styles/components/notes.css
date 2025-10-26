@@ -1,0 +1,82 @@
+.notes-card {
+display: flex;
+flex-direction: column;
+gap: 1rem;
+}
+
+.notes-header {
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+
+.btn-add {
+padding: 0.4rem 0.75rem;
+border-radius: 6px;
+background: #ffd64f;
+border: none;
+cursor: pointer;
+font-weight: 600;
+box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-add:hover {
+background: #ffde6f;
+}
+
+.notes-board {
+display: grid;
+gap: 1rem;
+grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.note {
+background: #fff9c4;
+border-radius: 8px;
+min-height: 50px;
+padding: 6px;
+box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+outline: none;
+position: relative;
+}
+
+.note:focus-visible {
+box-shadow: 0 0 0 3px #ffde6f;
+}
+
+.note:empty::before {
+content: attr(data-placeholder);
+color: #888;
+pointer-events: none;
+}
+
+.note-actions {
+position: absolute;
+top: 6px;
+right: 6px;
+}
+
+.btn-delete {
+appearance: none;
+border: none;
+background: rgba(249, 67, 67, 0.75);
+border-radius: 6px;
+width: 24px;
+height: 24px;
+line-height: 24px;
+font-weight: 700;
+cursor: pointer;
+}
+.btn-delete:hover { background: rgba(249, 67, 67, 1); }
+
+.note-body {
+min-height: 50px;
+padding: 0.5rem;
+white-space: pre-wrap;
+outline: none;
+}
+.note-body:empty::before {
+content: attr(data-placeholder);
+color: #888;
+pointer-events: none;
+}
