@@ -12,10 +12,15 @@ export function mountAffirmations() {
 
   const randomAffirmation = affirmations[Math.floor(Math.random() * affirmations.length)];
 
+  container.classList.remove('placeholder');
+  container.classList.add('affirmation-card');
+
   container.innerHTML = `
     <h2>Daily Affirmation 🌞</h2>
     <p>${randomAffirmation}</p>
-    <button id="new-affirmation">Refresh Affirmation</button>
+    <div class="controls">
+      <button id="new-affirmation">Refresh Affirmation</button>
+    </div>
   `;
 
   const newBtn = document.getElementById('new-affirmation')!;
