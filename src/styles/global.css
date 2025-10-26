@@ -1,18 +1,49 @@
 :root{
-  --pond-day:#bfe9e0;
-  --pond-deep:#70c1b3;
-  --accent:#fff7c0;
-  --muted:#7b9e9a;
+  --pond-sky: #c9f4ff;     /* light sky reflection */
+  --pond-day: #a8e6cf;     /* calm surface green-blue */
+  --pond-deep: #56b4a9;    /* deeper teal */
+  --pond-shadow: #308f82;  /* bottom depth */
+  --accent: #fff7c0;
+  --muted: #7b9e9a;
   --glass: rgba(255,255,255,0.6);
 }
-*{box-sizing:border-box}
-body,html{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial}
-.app-center{min-height:100vh;background:linear-gradient(180deg,var(--pond-day),var(--pond-deep));display:flex;align-items:center;justify-content:center;padding:24px}
+
+body,html {
+  height:100%;
+  margin:0;
+  font-family: Inter, system-ui, Segoe UI, Roboto, 'Helvetica Neue', Arial;
+}
+
+.app-center {
+  min-height: 100vh;
+  /* Layered pond effect: gentle vertical gradient + diagonal light shimmer */
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255,255,255,0.25) 0%, transparent 50%),
+    linear-gradient(180deg, var(--pond-sky) 0%, var(--pond-day) 45%, var(--pond-deep) 75%, var(--pond-shadow) 100%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
 
 .card{
   background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.5));
   border-radius:18px; padding:18px; box-shadow:0 8px 24px rgba(19,31,28,0.18);
-  width:360px; max-width:90vw; position:relative; overflow:hidden;
+  width:400px; max-width:90vw; position:relative; overflow:hidden;
 }
 
 .pond-surface{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 10% 10%, rgba(255,255,255,0.12), transparent 10%), radial-gradient(circle at 90% 90%, rgba(255,255,255,0.08), transparent 12%)}
+
+.app-center::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 40% 40%, rgba(255,255,255,0.15), transparent 40%);
+  animation: ripple 12s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes ripple {
+  0% { transform: scale(1) translateY(0); opacity: 0.8; }
+  100% { transform: scale(1.2) translateY(-2%); opacity: 0.6; }
+}

@@ -36,8 +36,17 @@ function mountPomodoro(){
   const progressEl = document.getElementById('progress') as HTMLElement
   const duck = document.querySelector('.duck') as HTMLElement
 
-  const durationButtons = Array.from(document.querySelectorAll('[data-min]')) as HTMLButtonElement[]
-  let selectedMinutes = Number(durationButtons.find(b=>b.getAttribute('aria-pressed')==='true')?.dataset.min ?? 25)
+  const durationButtons = Array.from(document.querySelectorAll('[data-min][data-type]')) as HTMLButtonElement[]
+  const workButtons = durationButtons.filter(b=>b.dataset.type === 'work')
+  const breakButtons = durationButtons.filter(b=>b.dataset.type === 'break')
+  const initialBtn = durationButtons.find(b=>b.getAttribute('aria-pressed')==='true') || workButtons.find(b=>b.dataset.min === '25')
+  let selectedMinutes = Number(initialBtn?.dataset.min ?? 25)
+
+  // mark selected visuals
+  durationButtons.forEach(b=>{
+    if(b.getAttribute('aria-pressed') === 'true') b.classList.add('selected')
+    else b.classList.remove('selected')
+  })
 
   const timer = new PomodoroTimer({minutes:selectedMinutes, onTick: (remaining)=>{
     timeDisplay.textContent = formatSeconds(Math.max(0, remaining))
@@ -48,19 +57,46 @@ function mountPomodoro(){
       duck.classList.add('floating')
       setTimeout(()=>duck.classList.remove('floating'), 3000)
     }
+    // clear start highlight when timer finishes
+    startBtn.classList.remove('start-active')
+    pauseBtn.classList.remove('pause-active')
   }})
 
   activeTimer = timer
 
   startBtn.addEventListener('click', ()=>{ timer.start(); startBtn.disabled = true })
   pauseBtn.addEventListener('click', ()=>{ timer.pause(); startBtn.disabled = false })
-  resetBtn.addEventListener('click', ()=>{ timer.reset(); startBtn.disabled = false })
+  resetBtn.addEventListener('click', ()=>{ 
+    timer.reset(); 
+    startBtn.disabled = false 
+    // brief visual cue that reset was pressed
+    resetBtn.classList.add('reset-active')
+    setTimeout(()=>resetBtn.classList.remove('reset-active'), 500)
+  })
+
+  // visual highlighting: start (green) and pause (red) are mutually exclusive
+  startBtn.addEventListener('click', ()=>{
+    startBtn.classList.add('start-active')
+    pauseBtn.classList.remove('pause-active')
+  })
+  pauseBtn.addEventListener('click', ()=>{
+    pauseBtn.classList.add('pause-active')
+    startBtn.classList.remove('start-active')
+  })
+  resetBtn.addEventListener('click', ()=>{
+    startBtn.classList.remove('start-active')
+    pauseBtn.classList.remove('pause-active')
+  })
 
   durationButtons.forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const mins = Number(btn.dataset.min)
-      durationButtons.forEach(b=>b.setAttribute('aria-pressed','false'))
+      const type = btn.dataset.type
+      // clear aria-pressed for the same group
+      const group = type === 'break' ? breakButtons : workButtons
+      group.forEach(b=>{ b.setAttribute('aria-pressed','false'); b.classList.remove('selected') })
       btn.setAttribute('aria-pressed','true')
+      btn.classList.add('selected')
       timer.setMinutes(mins)
       startBtn.disabled = false
     })
