@@ -11,7 +11,7 @@ const LOCK_INTERVAL_MS = 100;
 const LOCK_TIMEOUT_MS = 5000;
 const UUID_LENGTH = 4;
 
-const QUERY_OPTS = ["$includes", "$ge", "$le", "$regex", "$append", "$remove"] as const;
+const QUERY_OPTS = ["$includes", "$ge", "$le", "$regex", "$append", "$remove", "$increment", "$decrement", "$delete"] as const;
 type QUERY_OPT = typeof QUERY_OPTS[number];
 
 export interface Document {
@@ -385,6 +385,148 @@ export class LsDb<T extends Document> {
         let res = (await this.remove({"_id": doc._id} as Query<T>))[0];
 
         return res ?? null;
+    }
+
+    /**
+     * Perform update on documents selected by query
+     * @param query 
+     * @param update 
+     */
+    public update = async(query: Query<T>, update: Query<T>): Promise<Array<WithId<T>>> => {
+        await this.sync();
+        let docs = await this.find(query) as Array<any>;
+        console.log(`from update query:`, docs);
+
+        // iterate all documents found in query
+        for(const i in docs) {
+            // iterate all properties defined in update
+            for(const update_prop of Object.keys(update)) {
+                const this_update = update[update_prop];
+
+                // switch update type (string := assignment or no-parameter operation, object := array assignment or parameter operation)
+                switch(typeof this_update) {
+                    // direct updates
+                    case "bigint":
+                    case "boolean":
+                    case "number": {
+                        docs[i][update_prop] = this_update;
+                    } break;
+
+                    // string, either direct assignment or operation
+                    case "string": {
+                        switch(this_update) {
+                            case "$delete": {
+                                // delete operation (remove property from doc)
+                                delete docs[i][update_prop];
+                            }
+
+                            default:
+                                // assign string
+                                docs[i][update_prop] = this_update;
+                        }
+                    }
+
+                    // operations
+                    case "object": {
+                        // assign null
+                        if(this_update === null) {
+                            docs[i][update_prop] = null;
+                            break;
+                        }
+
+                        // assign array
+                        if(Array.isArray(this_update)) {
+                            docs[i][update_prop] = [...this_update];
+                            break;
+                        }
+
+                        // operation
+                        for(const op of Object.keys(this_update)) {
+                            const value = (this_update as any)[op];
+
+                            switch(op as QUERY_OPT) {
+                                /**
+                                 * Increment property in doc
+                                 */
+                                case "$increment": {
+                                    if(!Number.isNaN(docs[i][update_prop])) {
+                                        // validate increment value.
+                                        if(typeof value !== "undefined" && Number.isNaN(parseFloat(value))) {
+                                            throw new Error(`Cannot increment by non-numerical value.`);
+                                        }
+
+                                        // incremement by value if defined, 1 if not.
+                                        docs[i][update_prop] += (value)? parseFloat(value) : 1;
+                                    } else {
+                                        throw new Error(`Cannot use $increment on non-numerical values.`);
+                                    }
+                                } break;
+
+                                /**
+                                 * Decrement property in doc
+                                 */
+                                case "$decrement": {
+                                    if(!Number.isNaN(docs[i][update_prop])) {
+                                        // validate decrement value.
+                                        if(typeof value !== "undefined" && Number.isNaN(parseFloat(value))) {
+                                            throw new Error(`Cannot decrement by non-numerical value.`);
+                                        }
+
+                                        // decrement by value if defined, 1 if not.
+                                        docs[i][update_prop] -= (value)? parseFloat(value) : 1;
+                                    } else {
+                                        throw new Error(`Cannot use $decrement on non-numerical values.`);
+                                    }
+                                } break;
+
+                                /**
+                                 * Append to array
+                                 * Fix: Sometimes $append incorrectly targets documents.
+                                 */
+                                case "$append": {
+                                    if(!Array.isArray(docs[i][update_prop])) {
+                                        throw new Error(`Cannot use $append on non-array values.`);
+                                    }
+
+                                    console.log(`append`, value, docs[i]);
+                                    docs[i][update_prop].push(value);
+                                } break;
+
+                                case "$remove": {
+                                    if(!Array.isArray(docs[i][update_prop])) {
+                                        throw new Error(`Cannot use $append on non-array values.`);
+                                    }
+
+                                    docs[i][update_prop] = docs[i][update_prop].filter((element) => {return element !== value});
+                                } break;
+
+                                default:
+                                    // not an operation -- direct object assignment
+                                    docs[i][update_prop][op] = structuredClone(value);
+                            }
+                        }
+                    } break;
+                }
+            }
+        }
+
+        // insert updates to the database
+        for(const doc of docs) {
+            console.log(`update`, doc);
+            this.Documents[this.collection][doc._id] = doc;
+        }
+
+        // sync to localStorage
+        await this.lock();
+        try {
+            lsSetProperty(DBP.DOCUMENTS, this.Documents);
+        } catch (e) {
+            await this.unlock();
+            throw new Error(`Failed to sync update: ${e}`);
+        }
+
+        await this.unlock();
+        return docs;
     }
 
     /**
