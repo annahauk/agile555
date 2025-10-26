@@ -303,9 +303,13 @@ export class LsDb<T extends Document> {
      * @param query 
      * @returns 
      */
-    public find = async(query: Query<T>): Promise<Array<WithId<T>>> => {
+    public find = async(query?: Query<T>): Promise<Array<WithId<T>>> => {
         await this.sync();
         const COLLECTION = this.Documents[this.collection];
+
+        if(typeof query === "undefined") {
+            query = {};
+        }
         
         let res = new Array<WithId<T>>();
 
@@ -338,6 +342,10 @@ export class LsDb<T extends Document> {
      */
     public remove = async(query:Query<T>): Promise<Array<WithId<T>>> => {
         await this.sync();
+
+        if(typeof query === "undefined") {
+            throw new Error(`Query not defined.`);
+        }
 
         let target_documents;
         try {
@@ -382,6 +390,10 @@ export class LsDb<T extends Document> {
             return null;
         }
 
+        if(typeof query === "undefined") {
+            throw new Error(`Query not defined.`);
+        }
+
         let res = (await this.remove({"_id": doc._id} as Query<T>))[0];
 
         return res ?? null;
@@ -393,9 +405,12 @@ export class LsDb<T extends Document> {
      * @param update 
      */
     public update = async(query: Query<T>, update: Query<T>): Promise<Array<WithId<T>>> => {
+        if(typeof query === "undefined") {
+            throw new Error(`Query not defined.`);
+        }
+
         await this.sync();
         let docs = await this.find(query) as Array<any>;
-        console.log(`from update query:`, docs);
 
         // iterate all documents found in query
         for(const i in docs) {
@@ -527,6 +542,33 @@ export class LsDb<T extends Document> {
 
         await this.unlock();
         return docs;
+    }
+
+    /**
+     * Single variant of update
+     * @param query 
+     * @param update 
+     * @returns 
+     */
+    public updateOne = async(query: Query<T>, update: Query<T>): Promise<WithId<T> | null> => {
+        if(typeof query === "undefined") {
+            throw new Error(`Query not defined.`);
+        }
+
+        let doc = await this.findOne(query);
+
+        if(doc === null) {
+            return null;
+        }
+
+        let res = await this.update({_id: doc._id} as Query<T>, update);
+
+        // no documents updated
+        if(res.length < 1) {
+            return null;
+        }
+
+        return res[0];
     }
 
     /**
