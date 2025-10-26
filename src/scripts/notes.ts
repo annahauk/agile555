@@ -29,7 +29,7 @@ export function mountNotes(target: HTMLElement) {
           body.innerText = note.content;
     
           // Edit handler
-          body.addEventListener('input', async () => {
+          body.addEventListener('blur', async () => {
             note.content = body.innerText ?? '';
             note.updatedAt = Date.now();
             await update({ id: note.id }, note);
