@@ -192,6 +192,13 @@ export class LsDb<T extends Document> {
         let lock_timeout;
         try {
             await new Promise((resolve,reject) => {
+                // initial check (before loop)
+                if(!lsGetProperty(DBP.LOCKED, "boolean")) {
+                    // db not locked, dont start loop
+                    resolve(null);
+                    return;
+                }
+
                 lock_awaiter = setInterval(() => {
                     if(!lsGetProperty(DBP.LOCKED, "boolean")) {
                         resolve(null);
@@ -289,30 +296,80 @@ export class LsDb<T extends Document> {
 
     // }
 
+    /**
+     * Query the database. Shallow checking (nested objects not checked yet). Returns array of documents
+     * @param query 
+     * @returns 
+     */
     public find = async(query: Query<T>): Promise<Array<WithId<T>>> => {
-        await this.sync()
+        await this.sync();
         const COLLECTION = this.Documents[this.collection];
         
         let res = new Array<WithId<T>>();
 
         for(const k of Object.keys(COLLECTION)) {
-            if(await this.query_filter(COLLECTION[k], query)) {
-                res.push(COLLECTION[k]);
+            try {
+                if(await this.query_filter(COLLECTION[k], query)) {
+                    res.push(COLLECTION[k]);
+                }
+            } catch (e) {
+                throw `Find failed: ${e}`;
             }
         }
 
         return res;
     }
 
+    /**
+     * Query, returns first found document or null if none found
+     * @param query 
+     * @returns 
+     */
     public findOne = async(query: Query<T>): Promise<WithId<T> | null> => {
         let res = await this.find(query);
         return res[0] ?? null;
     }
 
-    // public remove = async(query:Query): Promise<Boolean> {
+    /**
+     * Remove documents based on query. Returns array of removed documents
+     * @param query 
+     */
+    public remove = async(query:Query<T>): Promise<Array<WithId<T>>> => {
+        await this.sync();
 
-    // }
+        let target_documents;
+        try {
+            target_documents = await this.find(query);
+        } catch (e) {
+            throw new Error(`Removal failed: ${e}`);
+        }
 
+        const target_keys = target_documents.map((doc) => {return doc._id});
+        let res = new Array<WithId<T>>();
+
+        // acquire lock
+        await this.lock();
+
+        // iteratively delete the keys
+        for(const k of target_keys) {
+            res.push(this.Documents[this.collection][k]);
+            delete this.Documents[this.collection][k];
+        }
+
+        // sync back to localStorage
+        lsSetProperty(DBP.DOCUMENTS, this.Documents);
+
+        // unlock and return res
+        await this.unlock();
+        return res;
+    }
+
+    /**
+     * Filter function, returns true based on if given document meets query spesification.
+     * @param doc 
+     * @param query 
+     * @returns 
+     */
     private query_filter = async(doc: any, query: Query<T>): Promise<boolean> => {
         for(const prop of Object.keys(query)) {
             const val = query[prop];
@@ -344,6 +401,13 @@ export class LsDb<T extends Document> {
                         const doc_val = doc[prop];
                         const test_val = (val as any)[op];
 
+                        /**
+                         * Make sure property exists
+                         */
+                        if(typeof doc_val === "undefined") {
+                            return false;
+                        }
+
                         switch (op as QUERY_OPT) {
                             /**
                              * greater than / equal to
@@ -355,7 +419,7 @@ export class LsDb<T extends Document> {
                                         return false;
                                     }
                                 } else {
-                                    throw new Error(`Cannot use $ge with non-numerical values.`);
+                                    throw (`Cannot use $ge with non-numerical values.`);
                                 }
                             } break;
 
@@ -369,7 +433,7 @@ export class LsDb<T extends Document> {
                                         return false;
                                     }
                                 } else {
-                                    throw new Error(`Cannot use $le with non-numerical values.`);
+                                    throw (`Cannot use $le with non-numerical values.`);
                                 }
                             } break;
 
@@ -383,7 +447,7 @@ export class LsDb<T extends Document> {
                                         return false;
                                     }
                                 } else {
-                                    throw new Error(`Cannot use $includes on non-string or non-array value.`);
+                                    throw (`Cannot use $includes on non-string or non-array value. ${doc_val}`);
                                 }
                             } break;
 
@@ -397,12 +461,12 @@ export class LsDb<T extends Document> {
                                         return false;
                                     }
                                 } else {
-                                    throw new Error(`Cannot use $regex on non-string value`);
+                                    throw (`Cannot use $regex on non-string value`);
                                 }
                             } break;
 
                             default: {
-                                throw new Error(`Bad query operation: ${op}`);
+                                throw (`Bad query operation: ${op}`);
                             }
                         }
                     }
