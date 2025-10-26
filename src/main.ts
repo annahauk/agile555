@@ -1,8 +1,8 @@
+import { PomodoroTimer } from './scripts/timer'
+import '/src/styles/components/timer.css'
+import '/src/styles/components/nav.css'
+import '/src/styles/components/home.css'
 import { mountAffirmations } from './scripts/affirmations';
-import { PomodoroTimer } from './scripts/timer';
-import '/src/styles/components/home.css';
-import '/src/styles/components/nav.css';
-import '/src/styles/components/timer.css';
 
 // Simple hash router
 type Route = '#/home' | '#/pomodoro' | '#/todo' | '#/notes' | '#/affirmations' | '#/music' | '#/journal'
