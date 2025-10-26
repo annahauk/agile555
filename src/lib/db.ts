@@ -22,6 +22,7 @@ export interface Document {
 export type Collection <T extends object> = Record<string, WithId<T>>;
 
 export type Query<T extends object> = Partial<
+    {[key:string]: any} &
     {[K in keyof T]: any} &
     {[K in QUERY_OPT]?: any}
 >
@@ -259,7 +260,6 @@ export class LsDb<T extends Document> {
 
     public insert = async(document:any): Promise<WithId<T>> => {
         // acquire lock & sync
-        await this.lock();
         await this.sync();
         
         // find a unique primary key
@@ -285,16 +285,18 @@ export class LsDb<T extends Document> {
         this.Documents[this.collection][p_key] = new_document;
 
         // write to storage
-        lsSetProperty(DBP.DOCUMENTS, this.Documents);
+        await this.lock();
+        try {
+            lsSetProperty(DBP.DOCUMENTS, this.Documents);
+        } catch (e) {
+            await this.unlock();
+            throw new Error(`Insert sync failed: ${e}`);
+        }
 
         // release lock and return document
         await this.unlock();
         return new_document;
     }
-
-    // public update = async(query:Query, document:T): Promise<T | null> {
-
-    // }
 
     /**
      * Query the database. Shallow checking (nested objects not checked yet). Returns array of documents
@@ -351,17 +353,38 @@ export class LsDb<T extends Document> {
         await this.lock();
 
         // iteratively delete the keys
-        for(const k of target_keys) {
-            res.push(this.Documents[this.collection][k]);
-            delete this.Documents[this.collection][k];
-        }
+        try {
+            for(const k of target_keys) {
+                res.push(this.Documents[this.collection][k]);
+                delete this.Documents[this.collection][k];
+            }
 
-        // sync back to localStorage
-        lsSetProperty(DBP.DOCUMENTS, this.Documents);
+            // sync back to localStorage
+            lsSetProperty(DBP.DOCUMENTS, this.Documents);
+        } catch (e) {
+            this.unlock();
+            throw new Error(`Removal failed: ${e}`);
+        }
 
         // unlock and return res
         await this.unlock();
         return res;
+    }
+
+    /**
+     * Removes / returns first found document
+     * @param query 
+     */
+    public removeOne = async(query: Query<T>): Promise<WithId<T> | null> => {
+        const doc = await this.findOne(query);
+
+        if(doc === null) {
+            return null;
+        }
+
+        let res = (await this.remove({"_id": doc._id} as Query<T>))[0];
+
+        return res ?? null;
     }
 
     /**
