@@ -64,28 +64,27 @@ function mountPomodoro(){
 
   activeTimer = timer
 
-  startBtn.addEventListener('click', ()=>{ timer.start(); startBtn.disabled = true })
-  pauseBtn.addEventListener('click', ()=>{ timer.pause(); startBtn.disabled = false })
-  resetBtn.addEventListener('click', ()=>{ 
-    timer.reset(); 
-    startBtn.disabled = false 
-    // brief visual cue that reset was pressed
-    resetBtn.classList.add('reset-active')
-    setTimeout(()=>resetBtn.classList.remove('reset-active'), 500)
-  })
-
   // visual highlighting: start (green) and pause (red) are mutually exclusive
   startBtn.addEventListener('click', ()=>{
+    timer.start()
+    startBtn.disabled = true
     startBtn.classList.add('start-active')
     pauseBtn.classList.remove('pause-active')
   })
   pauseBtn.addEventListener('click', ()=>{
+    timer.pause()
+    startBtn.disabled = false
     pauseBtn.classList.add('pause-active')
     startBtn.classList.remove('start-active')
   })
-  resetBtn.addEventListener('click', ()=>{
+  resetBtn.addEventListener('click', ()=>{ 
+    timer.reset()
+    startBtn.disabled = false
     startBtn.classList.remove('start-active')
     pauseBtn.classList.remove('pause-active')
+    // brief visual cue that reset was pressed
+    resetBtn.classList.add('reset-active')
+    setTimeout(()=>resetBtn.classList.remove('reset-active'), 500)
   })
 
   durationButtons.forEach(btn=>{
