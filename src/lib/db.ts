@@ -445,7 +445,7 @@ export class LsDb<T extends Document> {
                                 // assign string
                                 docs[i][update_prop] = this_update;
                         }
-                    }
+                    } break;
 
                     // operations
                     case "object": {
