@@ -1,6 +1,6 @@
 .site-header{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:transparent;position:fixed;inset:0 auto auto 0;width:100%;max-width:100%;z-index:20}
 .brand{font-weight:700;color:#053f3d}
 .site-nav{display:flex;gap:8px}
-.nav-btn{background:rgba(255,255,255,0.6);border-radius:10px;padding:8px 12px;border:none;cursor:pointer}
+.nav-btn{background:rgb(255, 255, 255);border-radius:10px;padding:8px 12px;border:none;cursor:pointer}
 .view-container{width:100%;max-width:900px}
 .placeholder{background:linear-gradient(180deg,rgba(255,255,255,0.85),rgba(255,255,255,0.6));padding:24px;border-radius:12px}

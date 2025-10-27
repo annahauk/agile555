@@ -1,12 +1,13 @@
 <template id="tmpl-pomodoro">
-  <div class="card">
+  <div class="card pomodoro-card">
     <div class="pond-surface"></div>
     <div class="pomodoro">
       <div class="duck-stage">
   <img class="duck" src="/src/assets/duck.png" alt="duck">
       </div>
 
-      <div class="timer-display" id="time-display">25:00</div>
+  <div class="timer-title">Time to get to work!</div>
+  <div class="timer-display" id="time-display">25:00</div>
 
       <div class="progress-wrap" aria-hidden>
         <div class="progress" id="progress"></div>
@@ -19,9 +20,19 @@
       </div>
 
       <div class="durations">
-  <button type="button" data-min="15">15</button>
-  <button type="button" data-min="25" aria-pressed="true">25</button>
-  <button type="button" data-min="50">50</button>
+        <div class="durations-group">
+          <div class="group-title">Work</div>
+          <button type="button" data-type="work" data-min="15">15</button>
+          <button type="button" data-type="work" data-min="25" aria-pressed="true">25</button>
+          <button type="button" data-type="work" data-min="50">50</button>
+        </div>
+
+        <div class="durations-group">
+          <div class="group-title">Break</div>
+          <button type="button" data-type="break" data-min="5">5</button>
+          <button type="button" data-type="break" data-min="10">10</button>
+          <button type="button" data-type="break" data-min="15">15</button>
+        </div>
       </div>
     </div>
   </div>
