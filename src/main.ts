@@ -2,7 +2,9 @@ import { PomodoroTimer } from './scripts/timer'
 import '/src/styles/components/timer.css'
 import '/src/styles/components/nav.css'
 import '/src/styles/components/home.css'
+import '/src/styles/components/notes.css'
 import { mountAffirmations } from './scripts/affirmations';
+import { mountNotes } from './scripts/notes';
 
 // Simple hash router
 type Route = '#/home' | '#/pomodoro' | '#/todo' | '#/notes' | '#/affirmations' | '#/music' | '#/journal'
@@ -138,7 +140,8 @@ function navigate(route:Route){
       mountTemplate('tmpl-todo')
       break
     case '#/notes':
-      mountTemplate('tmpl-notes')
+    //   mountTemplate('tmpl-notes')
+      mountNotes(document.querySelector("#app")!);
       break
     case '#/affirmations':
       mountTemplate('tmpl-affirmations')
@@ -181,7 +184,12 @@ async function loadTemplates(paths: string[]){
   })
 }
 
-await loadTemplates(['/src/components/home.html','/src/components/timer.html','/src/components/views.html'])
+await loadTemplates([
+    '/src/components/home.html',
+    '/src/components/timer.html',
+    '/src/components/views.html', 
+    'src/components/notes.html'
+])
 
 // initial navigation (default to home)
 navigate((window.location.hash as Route) || '#/home')
