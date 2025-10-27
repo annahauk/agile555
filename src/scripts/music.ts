@@ -62,10 +62,16 @@ export async function mountMusic() {
     events: {
       onReady: () => {
         startBtn.addEventListener("click", () => {
+          startBtn.disabled = true
+          startBtn.classList.add('start-active')
+          pauseBtn.classList.remove('pause-active')
           player.playVideo();
           if (recordElement) recordElement.classList.add('spinning');
         });
         pauseBtn.addEventListener("click", () => {
+          startBtn.disabled = false
+          pauseBtn.classList.add('pause-active')
+          startBtn.classList.remove('start-active')
           player.pauseVideo();
           if (recordElement) recordElement.classList.remove('spinning');
         });
