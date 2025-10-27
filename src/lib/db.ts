@@ -305,6 +305,12 @@ export class LsDb<T extends Document> {
      */
     public find = async(query?: Query<T>): Promise<Array<WithId<T>>> => {
         await this.sync();
+
+        // create collection if it doesnt exist
+        if(typeof this.Documents[this.collection] === "undefined") {
+            this.Documents[this.collection] = {};
+        }
+
         const COLLECTION = this.Documents[this.collection];
 
         if(typeof query === "undefined") {
@@ -503,7 +509,6 @@ export class LsDb<T extends Document> {
                                         throw new Error(`Cannot use $append on non-array values.`);
                                     }
 
-                                    console.log(`append`, value, docs[i]);
                                     docs[i][update_prop].push(value);
                                 } break;
 
@@ -527,7 +532,6 @@ export class LsDb<T extends Document> {
 
         // insert updates to the database
         for(const doc of docs) {
-            console.log(`update`, doc);
             this.Documents[this.collection][doc._id] = doc;
         }
 
