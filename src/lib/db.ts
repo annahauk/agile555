@@ -11,7 +11,7 @@ const LOCK_INTERVAL_MS = 100;
 const LOCK_TIMEOUT_MS = 5000;
 const UUID_LENGTH = 4;
 
-const QUERY_OPTS = ["$includes", "$ge", "$le", "$regex", "$append", "$remove", "$increment", "$decrement", "$delete"] as const;
+const QUERY_OPTS = ["$includes", "$ge", "$le", "$regex", "$in", "$append", "$remove", "$increment", "$decrement", "$delete"] as const;
 type QUERY_OPT = typeof QUERY_OPTS[number];
 
 export interface Document {
@@ -582,10 +582,10 @@ export class LsDb<T extends Document> {
      * @returns 
      */
     private query_filter = async(doc: any, query: Query<T>): Promise<boolean> => {
-        for(const prop of Object.keys(query)) {
-            const val = query[prop];
+        for(const query_field of Object.keys(query)) {
+            const query_field_value = query[query_field];
 
-            switch(typeof val) {
+            switch(typeof query_field_value) {
                 /**
                  * Direct comparisons
                  */
@@ -593,7 +593,7 @@ export class LsDb<T extends Document> {
                 case "boolean":
                 case "number":
                 case "string": {
-                    if(doc[prop] !== val) {
+                    if(doc[query_field] !== query_field_value) {
                         return false;
                     }
                 } break;
@@ -602,20 +602,20 @@ export class LsDb<T extends Document> {
                  * Query operator
                  */
                 case "object": {
-                    if(val === null) {
+                    if(query_field_value === null) {
                         break;
                     }
 
-                    const opts = Object.keys(val);
+                    const query_operation = Object.keys(query_field_value);
 
-                    for(const op of opts) {
-                        const doc_val = doc[prop];
-                        const test_val = (val as any)[op];
+                    for(const op of query_operation) {
+                        const document_field_value = doc[query_field];
+                        const query_op_value = (query_field_value as any)[op];
 
                         /**
                          * Make sure property exists
                          */
-                        if(typeof doc_val === "undefined") {
+                        if(typeof document_field_value === "undefined") {
                             return false;
                         }
 
@@ -625,8 +625,8 @@ export class LsDb<T extends Document> {
                              */
                             case "$ge": {
                                 // ensure both are numbers
-                                if(typeof doc_val === "number" && typeof test_val === "number") {
-                                    if(!(doc_val >= test_val)) {
+                                if(typeof document_field_value === "number" && typeof query_op_value === "number") {
+                                    if(!(document_field_value >= query_op_value)) {
                                         return false;
                                     }
                                 } else {
@@ -639,8 +639,8 @@ export class LsDb<T extends Document> {
                              */
                             case "$le": {
                                 // ensure both are numbers
-                                if(typeof doc_val === "number" && typeof test_val === "number") {
-                                    if(!(doc_val <= test_val)) {
+                                if(typeof document_field_value === "number" && typeof query_op_value === "number") {
+                                    if(!(document_field_value <= query_op_value)) {
                                         return false;
                                     }
                                 } else {
@@ -652,13 +652,13 @@ export class LsDb<T extends Document> {
                              * Array includes
                              */
                             case "$includes": {
-                                if(Array.isArray(doc_val) || typeof doc_val === "string") {
+                                if(Array.isArray(document_field_value) || typeof document_field_value === "string") {
                                     // test if included
-                                    if(!doc_val.includes(test_val)) {
+                                    if(!document_field_value.includes(query_op_value)) {
                                         return false;
                                     }
                                 } else {
-                                    throw (`Cannot use $includes on non-string or non-array value. ${doc_val}`);
+                                    throw (`Cannot use $includes on non-string or non-array value. ${document_field_value}`);
                                 }
                             } break;
 
@@ -666,13 +666,26 @@ export class LsDb<T extends Document> {
                              * Do regex match
                              */
                             case "$regex": {
-                                if(typeof doc_val === "string") {
-                                    let reg = new RegExp(test_val);
-                                    if(reg.exec(doc_val) === null) {
+                                if(typeof document_field_value === "string") {
+                                    let reg = new RegExp(query_op_value);
+                                    if(reg.exec(document_field_value) === null) {
                                         return false;
                                     }
                                 } else {
                                     throw (`Cannot use $regex on non-string value`);
+                                }
+                            } break;
+
+                            /**
+                             * Item included in array
+                             */
+                            case "$in": {
+                                if(!Array.isArray(query_op_value)) {
+                                    throw `Cannot use $in on a non-array value.`;
+                                }
+
+                                if(!query_op_value.includes(document_field_value)) {
+                                    return false; // item not included in the array
                                 }
                             } break;
 
