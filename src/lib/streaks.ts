@@ -50,6 +50,7 @@ export class Streak {
                  */
                 this.lost = true;
                 this.length = 0;
+                this.lastActivity = Date.now();
                 await this.clearActivities();
             } else {
                 // check if logging in on a new day (streak length changes per-day)
@@ -107,10 +108,6 @@ export class Streak {
      * Clear the streak's activity array
      */
     private clearActivities = async() => {
-        if(!this.initialized) {
-            throw `Cannot clear activities befire initialization.`;
-        }
-
         await db.updateOne({key: PERSISTANCE_KEY}, {activities: []});
     }
 
