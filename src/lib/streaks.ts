@@ -38,14 +38,6 @@ export class Streak {
             this.save("Logged in.");
             this.initialized = true;
         } else {
-            // small validation
-            if(Number.isNaN(data.lastActivity) || data.lastActivity < 0) {
-                throw "Bad last activity value (must be a positive number)."
-            }
-            if(Number.isNaN(data.length) || data.length < 0) {
-                throw "Bad length value (must be a positive integer)."
-            }
-
             this.lastActivity = data.lastActivity;
             this.length = data.length;
 
@@ -53,8 +45,12 @@ export class Streak {
              * Check if streak has been lost
              */
             if(Date.now().valueOf() - this.lastActivity.valueOf() >= STREAK_LIFETIME) {
+                /**
+                 * Streak lost
+                 */
                 this.lost = true;
                 this.length = 0;
+                await this.clearActivities();
             } else {
                 // check if logging in on a new day (streak length changes per-day)
                 // midnight of the last day of last activity
@@ -100,8 +96,33 @@ export class Streak {
      * @param activity 
      */
     public add = async(activity:string): Promise<void> => {
+        if(!this.initialized) {
+            throw `Cannot add activities before initializaiton. Initialize with streak.init()`
+        }
         this.lastActivity = Date.now();
         await this.save(activity);
+    }
+
+    /**
+     * Clear the streak's activity array
+     */
+    private clearActivities = async() => {
+        if(!this.initialized) {
+            throw `Cannot clear activities befire initialization.`;
+        }
+
+        await db.updateOne({key: PERSISTANCE_KEY}, {activities: []});
+    }
+
+    /**
+     * Get list of activities
+     */
+    public getActivities = async(): Promise<Array<string>> => {
+        if(!this.initialized) {
+            throw `Cannot get activities before initialization. Initlalize with streak.init()`;
+        }
+
+        return (await db.findOne({key:PERSISTANCE_KEY}))?.activities ?? [];
     }
 
     /**
