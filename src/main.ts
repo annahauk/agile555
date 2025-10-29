@@ -10,14 +10,14 @@ import { Streak } from './lib/streaks'
 // Simple hash router
 type Route = '#/home' | '#/pomodoro' | '#/todo' | '#/notes' | '#/affirmations' | '#/music' | '#/journal'
 
-const viewRoot = document.getElementById('view-root')!
-const navButtons = Array.from(document.querySelectorAll('.nav-btn')) as HTMLButtonElement[]
-
 /**
  * Initialize streak
  */
 export const STREAK = new Streak();
 await STREAK.init();
+
+const viewRoot = document.getElementById('view-root')!
+const navButtons = Array.from(document.querySelectorAll('.nav-btn')) as HTMLButtonElement[]
 
 function clearView(){
   viewRoot.innerHTML = ''
