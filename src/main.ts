@@ -5,12 +5,19 @@ import '/src/styles/components/home.css'
 import '/src/styles/components/notes.css'
 import { mountAffirmations } from './scripts/affirmations';
 import { mountNotes } from './scripts/notes';
+import { Streak } from './lib/streaks'
 
 // Simple hash router
 type Route = '#/home' | '#/pomodoro' | '#/todo' | '#/notes' | '#/affirmations' | '#/music' | '#/journal'
 
 const viewRoot = document.getElementById('view-root')!
 const navButtons = Array.from(document.querySelectorAll('.nav-btn')) as HTMLButtonElement[]
+
+/**
+ * Initialize streak
+ */
+export const STREAK = new Streak();
+await STREAK.init();
 
 function clearView(){
   viewRoot.innerHTML = ''
