@@ -10,6 +10,8 @@
 .controls button.start-active{background:linear-gradient(90deg,#78e08f,#4cd964);color:#042f27;border:none;box-shadow:0 8px 20px rgba(34,139,62,0.12)}
 .controls button.pause-active{background:linear-gradient(90deg,#ff9b9b,#ff6b6b);color:#3b0909;border:none;box-shadow:0 8px 20px rgba(180,34,34,0.12)}
 
+.controls input{padding:8px 12px;border-radius:10px;border:none;background:var(--muted);color:white;font-weight:600;cursor:pointer;min-width:84px}
+
 /* Timer title */
 .music-title{font-size:32px;color:var(--muted);font-weight:600;margin-bottom:6px}
 

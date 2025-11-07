@@ -38,11 +38,11 @@ export function loadYouTubeAPI(): Promise<void> {
 let player: YT.Player;
 
 export async function mountMusic() {
-  const startBtn = document.getElementById("start") as HTMLButtonElement | null;
-  const pauseBtn = document.getElementById("pause") as HTMLButtonElement | null;
+  //const startBtn = document.getElementById("start") as HTMLButtonElement | null;
+  //const pauseBtn = document.getElementById("pause") as HTMLButtonElement | null;
   const recordElement = document.getElementById("record") as HTMLElement | null;
 
-  if (!startBtn || !pauseBtn) {
+  if (!recordElement) {
     console.error("Music controls not found in DOM. Ensure the music template is mounted before calling mountMusic().");
     return;
   }
@@ -61,7 +61,7 @@ export async function mountMusic() {
     },
     events: {
       onReady: () => {
-        startBtn.addEventListener("click", () => {
+        /*startBtn.addEventListener("click", () => {
           startBtn.disabled = true
           startBtn.classList.add('start-active')
           pauseBtn.classList.remove('pause-active')
@@ -74,6 +74,15 @@ export async function mountMusic() {
           startBtn.classList.remove('start-active')
           player.pauseVideo();
           if (recordElement) recordElement.classList.remove('spinning');
+        });*/
+        recordElement.addEventListener("click", () => {
+          if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+            player.pauseVideo();
+            recordElement.classList.remove('spinning');
+          } else {
+            player.playVideo();
+            recordElement.classList.add('spinning');
+          }
         });
       },
     },
