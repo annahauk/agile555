@@ -1,0 +1,35 @@
+.music{
+  display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;color:#053f3d
+}
+.music-card{width:520px;max-width:95vw;padding:28px}
+.controls{display:flex;gap:8px}
+.controls button{padding:8px 12px;border-radius:10px;border:none;background:var(--muted);color:white;font-weight:600;cursor:pointer;min-width:84px}
+.controls button.secondary{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.25)}
+
+/* Start/Pause active styles */
+.controls button.start-active{background:linear-gradient(90deg,#78e08f,#4cd964);color:#042f27;border:none;box-shadow:0 8px 20px rgba(34,139,62,0.12)}
+.controls button.pause-active{background:linear-gradient(90deg,#ff9b9b,#ff6b6b);color:#3b0909;border:none;box-shadow:0 8px 20px rgba(180,34,34,0.12)}
+
+.controls input{padding:8px 12px;border-radius:10px;border:none;background:var(--muted);color:white;font-weight:600;cursor:pointer;min-width:84px}
+
+/* Timer title */
+.music-title{font-size:32px;color:var(--muted);font-weight:600;margin-bottom:6px}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.record{width:256px;height:256px;animation: spin 15s linear infinite;animation-play-state: paused;}
+.record.spinning{animation-play-state: running;}
+
+#player iframe {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  left: -9999px;
+  visibility: hidden;
+}
+
+@media (max-width:560px){
+  .music-display{font-size:44px;padding:16px}
+}
