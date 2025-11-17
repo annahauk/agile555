@@ -4,8 +4,7 @@
     width:100%;
     /* fill the viewport below the header */
     height: calc(100vh - var(--header-height, 64px));
-    min-height: calc(100vh - var(--header-height, 64px)); /* fallback
-      for older browsers */
+    min-height: calc(100vh - var(--header-height, 64px)); /* fallback for older browsers */
     /* smaller padding so content isn't pushed down; header height already
        reserved via --header-height */
     padding: 24px 16px 32px;
