@@ -20,7 +20,7 @@ async function ensureAudioContext(){
   if(!__audioCtx){
     __audioCtx = new AudioCtx()
   }
-  if(__audioCtx && __audioCtx.state === 'suspended'){
+  if(__audioCtx.state === 'suspended'){
     try{ await __audioCtx.resume() }catch(e){/* ignore */}
   }
   return __audioCtx
