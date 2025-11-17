@@ -1,33 +1,58 @@
 <template id="tmpl-home">
   <div class="home-pond">
-    <svg class="pond-bg" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <radialGradient id="g1" cx="30%" cy="30%">
-          <stop offset="0%" stop-color="#dff7f0" />
-          <stop offset="100%" stop-color="#8fd7c2" />
-        </radialGradient>
-      </defs>
-      <rect width="1200" height="600" fill="url(#g1)" />
-      <g fill="rgba(255,255,255,0.06)">
-        <ellipse cx="300" cy="200" rx="320" ry="120" />
-        <ellipse cx="900" cy="380" rx="360" ry="140" />
-      </g>
-    </svg>
+    <!-- soft pond background -->
 
+    <!-- moving ducks (unchanged behavior) -->
     <div class="ducks">
-      <img class="duck home-duck d1" src="/src/assets/duck.png" alt="duck">
-      <img class="duck home-duck d2" src="/src/assets/duck.png" alt="duck">
-      <img class="duck home-duck d3" src="/src/assets/duck.png" alt="duck">
-      <img class="duck home-duck d4" src="/src/assets/duck.png" alt="duck">
+      <img class="duck home-duck d1" src="/src/assets/duck.png" alt="duck floating on pond">
+      <img class="duck home-duck d2" src="/src/assets/duck.png" alt="duck floating on pond">
+      <img class="duck home-duck d3" src="/src/assets/duck.png" alt="duck floating on pond">
+      <img class="duck home-duck d4" src="/src/assets/duck.png" alt="duck floating on pond">
     </div>
 
-    <div class="home-cta card">
-      <h1>Welcome to Study Pond</h1>
-      <p>Calm your study sessions. Select a tool from the top navigation to begin.</p>
-      <div class="home-buttons">
-        <button type="button" data-route="#/pomodoro" class="nav-btn">Start Pomodoro</button>
-        <button type="button" data-route="#/todo" class="nav-btn">Open To-Do</button>
+    <!-- landing content -->
+    <section class="home-cta card">
+      <div class="home-hero-text">
+        <p class="eyebrow">Gentle focus, one ripple at a time
+        </p>
+        <h1>Welcome to Study Pond</h1>
+        <p class="hero-subtitle">
+          A watercolor-inspired study buddy with pomodoros, sticky notes,
+          affirmations, music, and journaling — all in one calm little pond.
+        </p>
       </div>
-    </div>
+
+      <div class="home-feature-grid">
+        <article class="feature-chip">
+          <h3>Pomodoro duck</h3>
+          <p>Swim through focused, customizable work/break sessions with a friendly floating timer.</p>
+        </article>
+        <article class="feature-chip">
+          <h3>Sticky notes</h3>
+          <p>Pin quick thoughts so your brain can relax and stay in flow.</p>
+        </article>
+        <article class="feature-chip">
+          <h3>Affirmations</h3>
+          <p>Sprinkle gentle reminders that you’re doing enough, one session at a time.</p>
+        </article>
+        <article class="feature-chip">
+          <h3>Music + journal</h3>
+          <p>Lo-fi vibes and reflections to close the loop after each study swim.</p>
+        </article>
+      </div>
+
+      <div class="home-buttons">
+        <button type="button" class="nav-btn primary-cta" data-route="#/pomodoro">
+          Start a focus session
+        </button>
+        <button type="button" class="nav-btn secondary-cta" data-route="#/todo">
+          View today’s tasks
+        </button>
+      </div>
+
+      <p class="hero-footnote">
+        Tip: begin with a single 25-minute session, then reward yourself with a short break on the dock.
+      </p>
+    </section>
   </div>
 </template>

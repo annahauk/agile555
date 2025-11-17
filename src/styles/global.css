@@ -1,17 +1,18 @@
-:root{
-  --pond-sky: #c9f4ff;     /* light sky reflection */
-  --pond-day: #a8e6cf;     /* calm surface green-blue */
-  --pond-deep: #56b4a9;    /* deeper teal */
-  --pond-shadow: #308f82;  /* bottom depth */
-  --accent: #fff7c0;
-  --muted: #7b9e9a;
-  --glass: rgba(255,255,255,0.6);
+:root {
+  --pond-sky: #dff7ff;
+  --pond-day: #bdeee0;
+  --pond-deep: #6cc7b7;
+  --pond-shadow: #2e8b82;
+  --accent: #fff6c7;
+  --muted: #648b86;
+  --glass: rgba(255,255,255,0.7);
 }
+
 
 body,html {
   height:100%;
   margin:0;
-  font-family: Inter, system-ui, Segoe UI, Roboto, 'Helvetica Neue', Arial;
+  font-family: Segoe UI, Inter, system-ui, Segoe UI, Roboto, 'Helvetica Neue', Arial;
 }
 
 .app-center {
@@ -23,14 +24,25 @@ body,html {
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:24px;
+  /* reserve space at top for fixed header; header height is provided via --header-height */
+  padding: calc(24px + var(--header-height, 64px)) 24px 24px 24px;
 }
 
-.card{
-  background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.5));
-  border-radius:18px; padding:18px; box-shadow:0 8px 24px rgba(19,31,28,0.18);
-  width:400px; max-width:90vw; position:relative; overflow:hidden;
+.card {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7)),
+    radial-gradient(circle at 10% 0%, rgba(255,255,255,0.4), transparent 55%),
+    radial-gradient(circle at 90% 100%, rgba(255,255,255,0.3), transparent 55%);
+  border-radius: 22px;
+  padding: 24px 24px 20px;
+  box-shadow: 0 10px 30px rgba(6, 46, 45, 0.18);
+  /* page width */
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(5, 63, 61, 0.08);
 }
+
 
 .pond-surface{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 10% 10%, rgba(255,255,255,0.12), transparent 10%), radial-gradient(circle at 90% 90%, rgba(255,255,255,0.08), transparent 12%)}
 
