@@ -126,15 +126,90 @@ function mountTodo(){
       empty.style.display = 'none'
     }
 
-    active.forEach(it => renderTodoItem(it, false, list))
-    done.forEach(it => renderTodoItem(it, true, completed))
+    active.forEach(it=>{
+      const li = document.createElement('li')
+      li.className = 'todo-item'
+      li.dataset.id = it.id
+
+      const cb = document.createElement('input')
+      cb.type = 'checkbox'
+      cb.checked = !!it.done
+      cb.addEventListener('change', ()=>{
+        it.done = cb.checked
+        saveTodos(items)
+        render()
+      })
+
+      const span = document.createElement('div')
+      span.className = 'text'
+      span.textContent = it.text
+
+      const badge = document.createElement('span')
+      badge.className = `priority ${it.priority}`
+      badge.textContent = it.priority[0].toUpperCase() + it.priority.slice(1)
+
+      const del = document.createElement('button')
+      del.className = 'delete'
+      del.type = 'button'
+      del.textContent = 'Delete'
+      del.addEventListener('click', ()=>{
+        items = items.filter(x=>x.id !== it.id)
+        saveTodos(items)
+        render()
+      })
+
+      li.appendChild(cb)
+      li.appendChild(badge)
+      li.appendChild(span)
+      li.appendChild(del)
+      list.appendChild(li)
+    })
+
+    done.forEach(it=>{
+      const li = document.createElement('li')
+      li.className = 'todo-item'
+      li.dataset.id = it.id
+
+      const cb = document.createElement('input')
+      cb.type = 'checkbox'
+      cb.checked = !!it.done
+      cb.addEventListener('change', ()=>{
+        it.done = cb.checked
+        saveTodos(items)
+        render()
+      })
+
+      const span = document.createElement('div')
+      span.className = 'text completed'
+      span.textContent = it.text
+
+      const badge = document.createElement('span')
+      badge.className = `priority ${it.priority}`
+      badge.textContent = it.priority[0].toUpperCase() + it.priority.slice(1)
+
+      const del = document.createElement('button')
+      del.className = 'delete'
+      del.type = 'button'
+      del.textContent = 'Delete'
+      del.addEventListener('click', ()=>{
+        items = items.filter(x=>x.id !== it.id)
+        saveTodos(items)
+        render()
+      })
+
+      li.appendChild(cb)
+      li.appendChild(badge)
+      li.appendChild(span)
+      li.appendChild(del)
+      completed.appendChild(li)
+    })
   }
 
   function addTask(text: string){
     const t = text.trim()
     if(!t) return
-  const priority = (sel.value as Priority) || 'medium'
-  const newItem: TodoItem = { id: String(Date.now()) + Math.random().toString(36).slice(2,8), text: t, done: false, priority }
+    const priority = (sel.value as Priority) || 'medium'
+    const newItem: TodoItem = { id: String(Date.now()) + Math.random().toString(36).slice(2,8), text: t, done: false, priority }
     items.unshift(newItem)
     saveTodos(items)
     render()
