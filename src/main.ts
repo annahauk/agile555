@@ -205,83 +205,8 @@ function mountTodo(){
       emptyEl.style.display = 'none'
     }
 
-    active.forEach(it=>{
-      const li = document.createElement('li')
-      li.className = 'todo-item'
-      li.dataset.id = it.id
-
-      const cb = document.createElement('input')
-      cb.type = 'checkbox'
-      cb.checked = !!it.done
-      cb.addEventListener('change', ()=>{
-        it.done = cb.checked
-        saveTodos(items)
-        render()
-      })
-
-      const span = document.createElement('div')
-      span.className = 'text'
-      span.textContent = it.text
-
-      const badge = document.createElement('span')
-      badge.className = `priority ${it.priority}`
-      badge.textContent = it.priority[0].toUpperCase() + it.priority.slice(1)
-
-      const del = document.createElement('button')
-      del.className = 'delete'
-      del.type = 'button'
-      del.textContent = 'Delete'
-      del.addEventListener('click', ()=>{
-        items = items.filter(x=>x.id !== it.id)
-        saveTodos(items)
-        render()
-      })
-
-      li.appendChild(cb)
-      li.appendChild(badge)
-      li.appendChild(span)
-      li.appendChild(del)
-      listEl.appendChild(li)
-    })
-
-    done.forEach(it=>{
-      const li = document.createElement('li')
-      li.className = 'todo-item'
-      li.dataset.id = it.id
-
-      const cb = document.createElement('input')
-      cb.type = 'checkbox'
-      cb.checked = !!it.done
-      cb.addEventListener('change', ()=>{
-        it.done = cb.checked
-        saveTodos(items)
-        render()
-      })
-
-      const span = document.createElement('div')
-      span.className = 'text completed'
-      span.textContent = it.text
-
-      const badge = document.createElement('span')
-      badge.className = `priority ${it.priority}`
-      badge.textContent = it.priority[0].toUpperCase() + it.priority.slice(1)
-
-      const del = document.createElement('button')
-      del.className = 'delete'
-      del.type = 'button'
-      del.textContent = 'Delete'
-      del.addEventListener('click', ()=>{
-        items = items.filter(x=>x.id !== it.id)
-        saveTodos(items)
-        render()
-      })
-
-      li.appendChild(cb)
-      li.appendChild(badge)
-      li.appendChild(span)
-      li.appendChild(del)
-      completedEl.appendChild(li)
-    })
+    active.forEach(it => renderTodoItem(it, false, list))
+    done.forEach(it => renderTodoItem(it, true, completed))
   }
 
   function addTask(text: string){
