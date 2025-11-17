@@ -1,0 +1,31 @@
+/* Styles for simple todo list */
+.todo-card{padding:20px;max-width:840px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,0.96),rgba(255,255,255,0.9));border-radius:16px}
+.todo-input-row{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.todo-input-row input[type="text"]{flex:1;padding:10px 12px;border-radius:10px;border:1px solid rgba(5,63,61,0.06);font-size:1rem}
+.todo-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.todo-item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,255,255,0.92));border:1px solid rgba(5,63,61,0.04)}
+.todo-item .text{flex:1}
+.todo-item .text.completed{text-decoration:line-through;opacity:0.6}
+.todo-item button.delete{background:transparent;border:1px solid rgba(220,20,60,0.08);color:#8b1f1f;padding:6px 8px;border-radius:8px;cursor:pointer}
+.todo-item input[type="checkbox"]{width:18px;height:18px}
+
+@media (max-width:560px){
+  .todo-card{padding:16px}
+  .todo-input-row input[type="text"]{font-size:0.95rem}
+}
+
+/* Priority badge styles */
+.priority{display:inline-block;padding:4px 8px;border-radius:999px;font-size:0.75rem;font-weight:600;color:#fff;margin-left:8px}
+.priority.high{background:#d64545}
+.priority.medium{background:#f0ad4e}
+.priority.low{background:#6abf69}
+
+/* Completed section */
+.completed-section{margin-top:18px;border-top:1px dashed rgba(0,0,0,0.06);padding-top:12px}
+.completed-section h3{margin:0 0 8px 0;font-size:0.95rem;color:#334}
+
+/* Empty state (pond/calm themed) */
+#todo-empty{display:none;text-align:center;padding:18px;color:#346;opacity:0.9}
+#todo-empty .emoji{font-size:28px;display:block;margin-bottom:8px}
+#todo-empty p{margin:0;color:#234}
+
