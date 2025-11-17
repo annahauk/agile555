@@ -1,7 +1,38 @@
-.home-pond{position:relative;width:100%;height:72vh;display:flex;align-items:center;justify-content:center}
-.pond-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.ducks{position:absolute;inset:0;pointer-events:none}
-.home-duck{position:absolute;width:72px;height:72px;transition:transform 2s linear}
+/* this is the container for the entire home pond section */
+  .home-pond{
+    position:relative;
+    width:100%;
+    /* fill the viewport below the header */
+    height: calc(100vh - var(--header-height, 64px));
+    min-height: calc(100vh - var(--header-height, 64px)); /* fallback
+      for older browsers */
+    /* smaller padding so content isn't pushed down; header height already
+       reserved via --header-height */
+    padding: 24px 16px 32px;
+    display:flex;
+    align-items:flex-start; /* keep content toward the top of the pond */
+    justify-content:center;
+    box-sizing:border-box;
+}
+/* this is the container for the pond background */
+.pond-bg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover
+}
+.ducks{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+.home-duck{
+  position:absolute;
+  width:100px;
+  height:100px;
+  transition:transform 2s linear;
+}
 .home-duck.d1{left:10%;top:30%;animation:duckMove1 12s linear infinite}
 .home-duck.d2{left:70%;top:20%;animation:duckMove2 10s linear infinite}
 .home-duck.d3{left:50%;top:60%;animation:duckMove3 14s linear infinite}
@@ -28,6 +59,148 @@
   100%{transform:translate(0,0) rotate(0)}
 }
 
-.home-cta{position:relative;z-index:4;max-width:640px;text-align:center}
-.home-cta h1{margin:0 0 8px}
+/* This is the container for the call-to-action section; the white card */
+.home-cta {
+  position: relative;
+  z-index: 4;
+  width: 100%;              /* similar to your .view-container width */
+  max-height: fit-content;
+  text-align: left;
+  padding: 32px 32px 24px;        /* more breathing room */
+  border-radius: 24px;            /* softer, bigger card feel */
+}
+/* .home-cta h1 {
+  margin: 0 0 10px;
+  font-size: clamp(3.4rem, 5.5vw, 4.6rem);
+  line-height: 1.02;
+} */
 .home-buttons{display:flex;gap:8px;justify-content:center;margin-top:12px}
+
+/* Landing content inside the card */
+.home-cta.card {
+  position: relative;
+  z-index: 4;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 1200px; /* make the card expand up to this width */
+  margin: 0 auto; /* center */
+  padding: 48px; /* increase internal space for taller feel */
+  min-height: 420px; /* make the CTA card taller */
+  justify-content: center; /* center contents vertically inside the taller card */
+}
+
+.home-hero-text h1 {
+  margin: 4px 0 6px;
+  font-size: clamp(2rem, 5.5vw, 4.6rem);
+  color: #053f3d;
+}
+
+.home-hero-text .hero-subtitle {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.eyebrow {
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.98rem;
+  color: rgba(5, 63, 61, 0.8);
+  margin: 0 0 2px;
+}
+
+/* feature chips grid */
+.home-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 10px 14px;
+  margin-top: 14px;
+}
+
+.feature-chip {
+  padding: 10px 12px;
+  padding-bottom: 30px;
+  border-radius: 14px;
+  width: 90%;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+  border: 1px solid rgba(5, 63, 61, 0.08);
+  box-shadow: 0 4px 10px rgba(6, 46, 45, 0.06);
+}
+
+.feature-chip h3 {
+  margin: 0 0 4px;
+  font-size: 1.1rem;
+  color: #053f3d;
+}
+
+.feature-chip p {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+/* Buttons row */
+.home-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-start;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+/* Make the paragraph stretch to occupy vertical space so text fills the card */
+.home-cta.card > p {
+  flex: 1 1 auto;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  font-size: clamp(1rem, 1.6vw, 1.1rem);
+  color: var(--muted);
+}
+
+/* reuse .nav-btn from nav.css but add hero variants */
+.primary-cta {
+  background: linear-gradient(135deg, #ffe799, #ffd174);
+  font-weight: 700;
+  box-shadow: 0 8px 18px rgba(196, 132, 15, 0.28);
+  padding: 12px 20px;
+  font-size: 1.05rem;
+  min-width: 170px;
+  border-radius: 12px;
+}
+
+.primary-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(196, 132, 15, 0.38);
+}
+
+.secondary-cta {
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(196, 132, 15, 0.14);
+  padding: 10px 16px;
+  font-size: 1rem;
+  min-width: 150px;
+  border-radius: 12px;
+}
+
+.hero-footnote {
+  margin: 8px 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+/* responsive tweaks */
+@media (max-width: 600px){
+  .home-pond {
+    height: auto;
+  }
+  .home-cta {
+    text-align: left;
+  }
+}

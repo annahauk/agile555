@@ -1,8 +1,40 @@
 .pomodoro{
-  display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;color:#053f3d
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:#053f3d;
+  /* ensure the timer view accounts for the fixed header and centers vertically */
+  min-height: calc(100vh - var(--header-height, 64px));
+  padding: 24px 16px; /* give some breathing room on mobile */
+  box-sizing: border-box;
 }
-.pomodoro-card{width:520px;max-width:95vw;padding:28px}
-.timer-display{font-size:72px;font-weight:700;background:linear-gradient(180deg,rgba(255,255,255,0.95),rgba(255,255,255,0.7));padding:28px;border-radius:16px;min-width:260px}
+.pomodoro-card{
+  width:520px;
+  max-width:95vw;
+  padding:20px; /* slightly less tall */
+  /* more translucent card so the pond/page shows through a bit */
+  background: rgba(255,255,255,0.82);
+  border-radius: 18px;
+  box-shadow: 0 8px 22px rgba(6,46,45,0.06);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 4; /* sit above any decorative background ducks */
+  margin: 0 auto;
+  transition: background 0.2s ease, padding 0.2s ease;
+}
+.timer-display{
+  font-size:72px;
+  font-weight:700;
+  background:linear-gradient(180deg,rgba(255,255,255,0.95),rgba(255,255,255,0.7));
+  padding:28px;
+  border-radius:16px;
+  min-width:260px;
+  width:100%;
+  box-sizing:border-box;
+}
 .controls{display:flex;gap:8px}
 .controls button{padding:8px 12px;border-radius:10px;border:none;background:var(--muted);color:white;font-weight:600;cursor:pointer;min-width:84px}
 .controls button.secondary{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.25)}
@@ -20,8 +52,20 @@
 .progress{height:100%;background:linear-gradient(90deg,#ffcc66,#ffd88d);width:0%;transition:width 0.3s linear}
 
 /* duck container */
-.duck-stage{position:relative;height:80px;width:100%;overflow:hidden}
-.duck{position:absolute;left:8px;top:8px;width:64px;height:64px;transition:transform 0.3s linear}
+.duck-stage{
+  position:relative;
+  height:96px; /* slightly taller to match the larger home ducks/space */
+  width:100%;
+  overflow:hidden;
+}
+.duck{
+  position:absolute;
+  left:8px;
+  top:8px;
+  width:64px;
+  height:64px;
+  transition:transform 0.3s linear;
+}
 .duck.floating{animation:float 3s ease-in-out infinite}
 @keyframes float{
   0%{transform:translateY(0) translateX(0)}
@@ -29,7 +73,7 @@
   100%{transform:translateY(0) translateX(0)}
 }
 
-.durations{display:flex;gap:18px;justify-content:center;align-items:flex-start}
+.durations{display:flex;gap:18px;justify-content:center;align-items:flex-start;flex-wrap:wrap}
 .durations-group{display:flex;flex-direction:column;gap:8px;align-items:center}
 .group-title{font-size:12px;color:var(--muted);opacity:0.9}
 .durations button{background:transparent;border:1px dashed rgba(0,0,0,0.06);padding:8px 12px;border-radius:10px;cursor:pointer}
@@ -51,7 +95,41 @@
   color:#05433a;
 }
 
-@media (max-width:560px){
-  .pomodoro-card{width:100%;padding:16px}
+@media (max-width:900px){
+  .pomodoro-card{width:100%;padding:20px}
   .timer-display{font-size:44px;padding:16px}
+  .duck-stage{height:80px}
+}
+
+@media (max-width:560px){
+  .pomodoro-card{padding:16px}
+  .timer-display{font-size:36px;padding:12px}
+  .duck{width:52px;height:52px}
+}
+
+/* mini pop-out widget shown when navigating away from Pomodoro */
+.pomodoro-mini{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  width:220px;
+  background: rgba(255,255,255,0.92);
+  border-radius:12px;
+  box-shadow:0 10px 30px rgba(6,46,45,0.12);
+  padding:10px 12px;
+  z-index:9999;
+  display:flex;
+  gap:8px;
+  align-items:center;
+  justify-content:space-between;
+  font-size:14px;
+}
+.pomodoro-mini .mini-time{font-weight:700;font-size:16px;color:#053f3d}
+.pomodoro-mini .mini-controls{display:flex;gap:8px}
+.pomodoro-mini button{padding:6px 10px;border-radius:8px;border:none;background:var(--muted);color:#fff;cursor:pointer}
+.pomodoro-mini button.secondary{background:transparent;color:var(--muted);border:1px solid rgba(0,0,0,0.06)}
+.pomodoro-mini .mini-open{background:linear-gradient(135deg,#ffe799,#ffd174);color:#3b2a00}
+
+@media (max-width:480px){
+  .pomodoro-mini{right:12px;left:12px;width:auto;padding:8px}
 }
