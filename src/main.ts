@@ -101,13 +101,13 @@ function mountTodo(){
         render()
       })
 
-  const span = document.createElement('div')
-  span.className = 'text'
-  span.textContent = it.text
+      const span = document.createElement('div')
+      span.className = 'text'
+      span.textContent = it.text
 
-  const badge = document.createElement('span')
-  badge.className = `priority ${it.priority}`
-  badge.textContent = it.priority[0].toUpperCase() + it.priority.slice(1)
+      const badge = document.createElement('span')
+      badge.className = `priority ${it.priority}`
+      badge.textContent = it.priority[0].toUpperCase() + it.priority.slice(1)
 
       const del = document.createElement('button')
       del.className = 'delete'
