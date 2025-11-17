@@ -110,8 +110,8 @@ function mountTodo(){
   }
 
   function render(){
-    list.innerHTML = ''
-    completed.innerHTML = ''
+    listEl.innerHTML = ''
+    completedEl.innerHTML = ''
     const active = items.filter(x=>!x.done)
     const done = items.filter(x=>x.done)
 
@@ -121,9 +121,9 @@ function mountTodo(){
     done.sort((a,b)=> priorityRank(a.priority) - priorityRank(b.priority) || a.id.localeCompare(b.id))
 
     if(items.length === 0){
-      empty.style.display = 'block'
+      emptyEl.style.display = 'block'
     } else {
-      empty.style.display = 'none'
+      emptyEl.style.display = 'none'
     }
 
     active.forEach(it=>{
@@ -162,7 +162,7 @@ function mountTodo(){
       li.appendChild(badge)
       li.appendChild(span)
       li.appendChild(del)
-      list.appendChild(li)
+      listEl.appendChild(li)
     })
 
     done.forEach(it=>{
@@ -201,24 +201,24 @@ function mountTodo(){
       li.appendChild(badge)
       li.appendChild(span)
       li.appendChild(del)
-      completed.appendChild(li)
+      completedEl.appendChild(li)
     })
   }
 
   function addTask(text: string){
     const t = text.trim()
     if(!t) return
-    const priority = (sel.value as Priority) || 'medium'
+    const priority = (prioritySel.value as Priority) || 'medium'
     const newItem: TodoItem = { id: String(Date.now()) + Math.random().toString(36).slice(2,8), text: t, done: false, priority }
     items.unshift(newItem)
     saveTodos(items)
     render()
-    inpt.value = ''
-    inpt.focus()
+    input.value = ''
+    input.focus()
   }
 
-  addBtn.addEventListener('click', ()=> addTask(inpt.value))
-  inpt.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') { addTask(inpt.value) } })
+  addBtn.addEventListener('click', ()=> addTask(input.value))
+  input.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') { addTask(input.value) } })
 
   render()
 }
