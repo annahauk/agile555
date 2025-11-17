@@ -3,6 +3,7 @@ import '/src/styles/components/music.css'
 import '/src/styles/components/timer.css'
 import '/src/styles/components/nav.css'
 import '/src/styles/components/home.css'
+import '/src/styles/components/todo.css'
 import '/src/styles/components/notes.css'
 import { mountAffirmations } from './scripts/affirmations';
 import { mountMusic } from "./scripts/music";
@@ -112,6 +113,157 @@ function mountTemplate(id:string){
   if(!tmpl) return
   const clone = tmpl.content.cloneNode(true) as DocumentFragment
   viewRoot.appendChild(clone)
+}
+
+// --- To-Do mounting and behavior ---
+const TODOS_KEY = 'pomodoro-todos'
+type Priority = 'low'|'medium'|'high'
+interface TodoItem { id: string; text: string; done: boolean; priority: Priority }
+
+function loadTodos(): TodoItem[]{
+  try{
+    const raw = localStorage.getItem(TODOS_KEY)
+    if(!raw) return []
+    return JSON.parse(raw) as TodoItem[]
+  }catch(e){ return [] }
+}
+
+function saveTodos(items: TodoItem[]){
+  try{ localStorage.setItem(TODOS_KEY, JSON.stringify(items)) }catch(e){}
+}
+
+function mountTodo(){
+  // insert template
+  mountTemplate('tmpl-todo')
+
+  const input = document.getElementById('todo-input') as HTMLInputElement | null
+  const addBtn = document.getElementById('todo-add') as HTMLButtonElement | null
+  const prioritySel = document.getElementById('todo-priority') as HTMLSelectElement | null
+  const listEl = document.getElementById('todo-list') as HTMLUListElement | null
+  const completedEl = document.getElementById('todo-completed') as HTMLUListElement | null
+  const emptyEl = document.getElementById('todo-empty') as HTMLElement | null
+  if(!listEl || !input || !addBtn || !prioritySel || !completedEl || !emptyEl) return
+
+  let items = loadTodos()
+
+  const list = listEl as HTMLUListElement
+  const completed = completedEl as HTMLUListElement
+  const inpt = input as HTMLInputElement
+  const sel = prioritySel as HTMLSelectElement
+  const empty = emptyEl as HTMLElement
+
+  function render(){
+    list.innerHTML = ''
+    completed.innerHTML = ''
+    const active = items.filter(x=>!x.done)
+    const done = items.filter(x=>x.done)
+
+    // order by priority: high -> medium -> low, then by creation (id) to keep stable order
+    const priorityRank = (p: Priority) => p === 'high' ? 0 : p === 'medium' ? 1 : 2
+    active.sort((a,b)=> priorityRank(a.priority) - priorityRank(b.priority) || a.id.localeCompare(b.id))
+    done.sort((a,b)=> priorityRank(a.priority) - priorityRank(b.priority) || a.id.localeCompare(b.id))
+
+    if(items.length === 0){
+      empty.style.display = 'block'
+    } else {
+      empty.style.display = 'none'
+    }
+
+    active.forEach(it=>{
+      const li = document.createElement('li')
+      li.className = 'todo-item'
+      li.dataset.id = it.id
+
+      const cb = document.createElement('input')
+      cb.type = 'checkbox'
+      cb.checked = !!it.done
+      cb.addEventListener('change', ()=>{
+        it.done = cb.checked
+        saveTodos(items)
+        render()
+      })
+
+      const span = document.createElement('div')
+      span.className = 'text'
+      span.textContent = it.text
+
+      const badge = document.createElement('span')
+      badge.className = `priority ${it.priority}`
+      badge.textContent = it.priority[0].toUpperCase() + it.priority.slice(1)
+
+      const del = document.createElement('button')
+      del.className = 'delete'
+      del.type = 'button'
+      del.textContent = 'Delete'
+      del.addEventListener('click', ()=>{
+        items = items.filter(x=>x.id !== it.id)
+        saveTodos(items)
+        render()
+      })
+
+      li.appendChild(cb)
+      li.appendChild(badge)
+      li.appendChild(span)
+      li.appendChild(del)
+      list.appendChild(li)
+    })
+
+    done.forEach(it=>{
+      const li = document.createElement('li')
+      li.className = 'todo-item'
+      li.dataset.id = it.id
+
+      const cb = document.createElement('input')
+      cb.type = 'checkbox'
+      cb.checked = !!it.done
+      cb.addEventListener('change', ()=>{
+        it.done = cb.checked
+        saveTodos(items)
+        render()
+      })
+
+      const span = document.createElement('div')
+      span.className = 'text completed'
+      span.textContent = it.text
+
+      const badge = document.createElement('span')
+      badge.className = `priority ${it.priority}`
+      badge.textContent = it.priority[0].toUpperCase() + it.priority.slice(1)
+
+      const del = document.createElement('button')
+      del.className = 'delete'
+      del.type = 'button'
+      del.textContent = 'Delete'
+      del.addEventListener('click', ()=>{
+        items = items.filter(x=>x.id !== it.id)
+        saveTodos(items)
+        render()
+      })
+
+      li.appendChild(cb)
+      li.appendChild(badge)
+      li.appendChild(span)
+      li.appendChild(del)
+      completed.appendChild(li)
+    })
+  }
+
+  function addTask(text: string){
+    const t = text.trim()
+    if(!t) return
+    const priority = (sel.value as Priority) || 'medium'
+    const newItem: TodoItem = { id: String(Date.now()) + Math.random().toString(36).slice(2,8), text: t, done: false, priority }
+    items.unshift(newItem)
+    saveTodos(items)
+    render()
+    inpt.value = ''
+    inpt.focus()
+  }
+
+  addBtn.addEventListener('click', ()=> addTask(inpt.value))
+  inpt.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') { addTask(inpt.value) } })
+
+  render()
 }
 
 // Keep a reference to the running pomodoro timer so we can pause it when navigating away
@@ -380,7 +532,7 @@ function navigate(route:Route){
       mountPomodoro()
       break
     case '#/todo':
-      mountTemplate('tmpl-todo')
+      mountTodo()
       break
     case '#/notes':
     //   mountTemplate('tmpl-notes')
