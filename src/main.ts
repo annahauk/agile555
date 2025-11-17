@@ -70,6 +70,45 @@ function mountTodo(){
   const sel = prioritySel as HTMLSelectElement
   const empty = emptyEl as HTMLElement
 
+  function renderTodoItem(item: TodoItem, isCompleted: boolean, targetList: HTMLUListElement){
+    const li = document.createElement('li')
+    li.className = 'todo-item'
+    li.dataset.id = item.id
+
+    const cb = document.createElement('input')
+    cb.type = 'checkbox'
+    cb.checked = !!item.done
+    cb.addEventListener('change', ()=>{
+      item.done = cb.checked
+      saveTodos(items)
+      render()
+    })
+
+    const span = document.createElement('div')
+    span.className = isCompleted ? 'text completed' : 'text'
+    span.textContent = item.text
+
+    const badge = document.createElement('span')
+    badge.className = `priority ${item.priority}`
+    badge.textContent = item.priority[0].toUpperCase() + item.priority.slice(1)
+
+    const del = document.createElement('button')
+    del.className = 'delete'
+    del.type = 'button'
+    del.textContent = 'Delete'
+    del.addEventListener('click', ()=>{
+      items = items.filter(x=>x.id !== item.id)
+      saveTodos(items)
+      render()
+    })
+
+    li.appendChild(cb)
+    li.appendChild(badge)
+    li.appendChild(span)
+    li.appendChild(del)
+    targetList.appendChild(li)
+  }
+
   function render(){
     list.innerHTML = ''
     completed.innerHTML = ''
@@ -87,83 +126,8 @@ function mountTodo(){
       empty.style.display = 'none'
     }
 
-    active.forEach(it=>{
-      const li = document.createElement('li')
-      li.className = 'todo-item'
-      li.dataset.id = it.id
-
-      const cb = document.createElement('input')
-      cb.type = 'checkbox'
-      cb.checked = !!it.done
-      cb.addEventListener('change', ()=>{
-        it.done = cb.checked
-        saveTodos(items)
-        render()
-      })
-
-  const span = document.createElement('div')
-  span.className = 'text'
-  span.textContent = it.text
-
-  const badge = document.createElement('span')
-  badge.className = `priority ${it.priority}`
-  badge.textContent = it.priority[0].toUpperCase() + it.priority.slice(1)
-
-      const del = document.createElement('button')
-      del.className = 'delete'
-      del.type = 'button'
-      del.textContent = 'Delete'
-      del.addEventListener('click', ()=>{
-        items = items.filter(x=>x.id !== it.id)
-        saveTodos(items)
-        render()
-      })
-
-      li.appendChild(cb)
-      li.appendChild(badge)
-      li.appendChild(span)
-      li.appendChild(del)
-      list.appendChild(li)
-    })
-
-    done.forEach(it=>{
-      const li = document.createElement('li')
-      li.className = 'todo-item'
-      li.dataset.id = it.id
-
-      const cb = document.createElement('input')
-      cb.type = 'checkbox'
-      cb.checked = !!it.done
-      cb.addEventListener('change', ()=>{
-        it.done = cb.checked
-        saveTodos(items)
-        render()
-      })
-
-      const span = document.createElement('div')
-      span.className = 'text completed'
-      span.textContent = it.text
-
-      const badge = document.createElement('span')
-      badge.className = `priority ${it.priority}`
-      badge.textContent = it.priority[0].toUpperCase() + it.priority.slice(1)
-
-      const del = document.createElement('button')
-      del.className = 'delete'
-      del.type = 'button'
-      del.textContent = 'Delete'
-      del.addEventListener('click', ()=>{
-        items = items.filter(x=>x.id !== it.id)
-        saveTodos(items)
-        render()
-      })
-
-      li.appendChild(cb)
-      li.appendChild(badge)
-      li.appendChild(span)
-      li.appendChild(del)
-      completed.appendChild(li)
-    })
+    active.forEach(it => renderTodoItem(it, false, list))
+    done.forEach(it => renderTodoItem(it, true, completed))
   }
 
   function addTask(text: string){
