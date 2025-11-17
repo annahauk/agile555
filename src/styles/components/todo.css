@@ -21,8 +21,8 @@
 .priority.low{background:#6abf69}
 
 /* Completed section */
-.completed-section{margin-top:18px;border-top:1px dashed rgba(0,0,0,0.06);padding-top:12px}
-.completed-section h3{margin:0 0 8px 0;font-size:0.95rem;color:#334}
+.todo-completed{margin-top:18px;border-top:1px dashed rgba(0,0,0,0.06);padding-top:12px}
+.todo-completed h3{margin:0 0 8px 0;font-size:0.95rem;color:#334}
 
 /* Empty state (pond/calm themed) */
 #todo-empty{display:none;text-align:center;padding:18px;color:#346;opacity:0.9}
