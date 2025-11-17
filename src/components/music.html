@@ -1,0 +1,17 @@
+<template id="tmpl-music">
+    <div class="card music-card">
+        <div class="music">
+            <div class="music-title">Study Tunes</div>
+            <div class="record">
+                <input type="image" id="record" class="record" src="/src/assets/record.png" />
+            </div>
+
+            <div class="controls">
+                <label for="volume">Volume</label>
+                <input type="range" id="volume" name="volume" min="0" max="100" />
+            </div>
+
+            <div id="player" style="width:0; height:0; overflow:hidden;"></div>
+        </div>
+    </div>
+</template>

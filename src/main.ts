@@ -1,8 +1,13 @@
 import { PomodoroTimer } from './scripts/timer'
+import '/src/styles/components/music.css'
 import '/src/styles/components/timer.css'
 import '/src/styles/components/nav.css'
 import '/src/styles/components/home.css'
+import '/src/styles/components/notes.css'
 import { mountAffirmations } from './scripts/affirmations';
+import { mountMusic } from "./scripts/music";
+import { mountNotes } from './scripts/notes';
+import { Streak } from './lib/streaks'
 
 // small helper to play a short chime using Web Audio (no external asset needed)
 // Shared AudioContext and mute state (persisted)
@@ -74,6 +79,12 @@ function playChime(){
 
 // Simple hash router
 type Route = '#/home' | '#/pomodoro' | '#/todo' | '#/notes' | '#/affirmations' | '#/music' | '#/journal'
+
+/**
+ * Initialize streak
+ */
+export const STREAK = new Streak();
+await STREAK.init();
 
 const viewRoot = document.getElementById('view-root')!
 const navButtons = Array.from(document.querySelectorAll('.nav-btn')) as HTMLButtonElement[]
@@ -372,7 +383,8 @@ function navigate(route:Route){
       mountTemplate('tmpl-todo')
       break
     case '#/notes':
-      mountTemplate('tmpl-notes')
+    //   mountTemplate('tmpl-notes')
+      mountNotes(document.querySelector("#app")!);
       break
     case '#/affirmations':
       mountTemplate('tmpl-affirmations')
@@ -380,6 +392,7 @@ function navigate(route:Route){
       break
     case '#/music':
       mountTemplate('tmpl-music')
+      mountMusic();
       break
     case '#/journal':
       mountTemplate('tmpl-journal')
@@ -429,26 +442,13 @@ async function loadTemplates(paths: string[]){
   })
 }
 
-await loadTemplates(['/src/components/home.html','/src/components/timer.html','/src/components/views.html'])
+await loadTemplates([
+    '/src/components/home.html',
+    '/src/components/timer.html',
+    '/src/components/views.html', 
+    'src/components/notes.html',
+    'src/components/music.html'
+])
 
 // initial navigation (default to home)
-// ensure header height variable is set so content isn't hidden under a wrapped header
-function updateHeaderHeight(){
-  const header = document.querySelector('.site-header') as HTMLElement | null
-  if(!header) return
-  const h = header.offsetHeight
-  document.documentElement.style.setProperty('--header-height', `${h}px`)
-}
-
-// update header height on load and resize
-updateHeaderHeight()
-window.addEventListener('resize', ()=>{
-  // debounce a little
-  clearTimeout((window as any).__hdrTimer)
-  ;(window as any).__hdrTimer = setTimeout(updateHeaderHeight, 120)
-})
-
-// also update after navigation in case header content changes
-window.addEventListener('hashchange', ()=> setTimeout(updateHeaderHeight, 50))
-
 navigate((window.location.hash as Route) || '#/home')
