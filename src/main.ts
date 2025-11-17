@@ -9,6 +9,7 @@ import { mountAffirmations } from './scripts/affirmations';
 import { mountMusic } from "./scripts/music";
 import { mountNotes } from './scripts/notes';
 import { Streak } from './lib/streaks'
+import { LsDb } from './lib/db'
 
 // small helper to play a short chime using Web Audio (no external asset needed)
 // Shared AudioContext and mute state (persisted)
@@ -120,19 +121,21 @@ const TODOS_KEY = 'pomodoro-todos'
 type Priority = 'low'|'medium'|'high'
 interface TodoItem { id: string; text: string; done: boolean; priority: Priority }
 
-function loadTodos(): TodoItem[]{
-  try{
-    const raw = localStorage.getItem(TODOS_KEY)
-    if(!raw) return []
-    return JSON.parse(raw) as TodoItem[]
-  }catch(e){ return [] }
+// setup todo
+const TodoDB = new LsDb<TodoItem>(TODOS_KEY);
+
+async function loadTodos(): Promise<TodoItem[]> {
+  return await TodoDB.find({});
 }
 
-function saveTodos(items: TodoItem[]){
-  try{ localStorage.setItem(TODOS_KEY, JSON.stringify(items)) }catch(e){}
+async function saveTodos(items: TodoItem[]): Promise<void> {
+  await TodoDB.remove({})
+  for(const item of items) {
+    let i = await TodoDB.insert(item);
+  }
 }
 
-function mountTodo(){
+async function mountTodo(){
   // insert template
   mountTemplate('tmpl-todo')
 
@@ -144,7 +147,7 @@ function mountTodo(){
   const emptyEl = document.getElementById('todo-empty') as HTMLElement | null
   if(!listEl || !input || !addBtn || !prioritySel || !completedEl || !emptyEl) return
 
-  let items = loadTodos()
+  let items = await loadTodos();
 
   const list = listEl as HTMLUListElement
   const completed = completedEl as HTMLUListElement
@@ -169,7 +172,7 @@ function mountTodo(){
       empty.style.display = 'none'
     }
 
-    active.forEach(it=>{
+    active.forEach(async (it) =>{
       const li = document.createElement('li')
       li.className = 'todo-item'
       li.dataset.id = it.id
@@ -177,9 +180,9 @@ function mountTodo(){
       const cb = document.createElement('input')
       cb.type = 'checkbox'
       cb.checked = !!it.done
-      cb.addEventListener('change', ()=>{
+      cb.addEventListener('change', async ()=>{
         it.done = cb.checked
-        saveTodos(items)
+        await saveTodos(items);
         render()
       })
 
@@ -195,9 +198,9 @@ function mountTodo(){
       del.className = 'delete'
       del.type = 'button'
       del.textContent = 'Delete'
-      del.addEventListener('click', ()=>{
+      del.addEventListener('click', async  ()=>{
         items = items.filter(x=>x.id !== it.id)
-        saveTodos(items)
+        await saveTodos(items)
         render()
       })
 
@@ -216,9 +219,9 @@ function mountTodo(){
       const cb = document.createElement('input')
       cb.type = 'checkbox'
       cb.checked = !!it.done
-      cb.addEventListener('change', ()=>{
+      cb.addEventListener('change', async ()=>{
         it.done = cb.checked
-        saveTodos(items)
+        await saveTodos(items)
         render()
       })
 
@@ -234,9 +237,9 @@ function mountTodo(){
       del.className = 'delete'
       del.type = 'button'
       del.textContent = 'Delete'
-      del.addEventListener('click', ()=>{
+      del.addEventListener('click', async ()=>{
         items = items.filter(x=>x.id !== it.id)
-        saveTodos(items)
+        await saveTodos(items)
         render()
       })
 
@@ -248,13 +251,13 @@ function mountTodo(){
     })
   }
 
-  function addTask(text: string){
+  async function addTask(text: string){
     const t = text.trim()
     if(!t) return
     const priority = (sel.value as Priority) || 'medium'
     const newItem: TodoItem = { id: String(Date.now()) + Math.random().toString(36).slice(2,8), text: t, done: false, priority }
     items.unshift(newItem)
-    saveTodos(items)
+    await saveTodos(items)
     render()
     inpt.value = ''
     inpt.focus()
