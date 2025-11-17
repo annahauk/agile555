@@ -169,8 +169,8 @@ function mountTodo(){
   function addTask(text: string){
     const t = text.trim()
     if(!t) return
-  const priority = (sel.value as Priority) || 'medium'
-  const newItem: TodoItem = { id: String(Date.now()) + Math.random().toString(36).slice(2,8), text: t, done: false, priority }
+    const priority = (sel.value as Priority) || 'medium'
+    const newItem: TodoItem = { id: String(Date.now()) + Math.random().toString(36).slice(2,8), text: t, done: false, priority }
     items.unshift(newItem)
     saveTodos(items)
     render()
