@@ -266,7 +266,7 @@ function mountPomodoro(){
 
     if(titleEl){
       const type = matched?.dataset.type || 'work'
-      titleEl.textContent = type === 'break' ? 'Time to relax' : 'Time to get to work!'
+      titleEl.textContent = type === 'break' ? 'Time to take a break...' : 'Time to get to work!'
     }
 
     // reflect running/paused state on the start/pause buttons
