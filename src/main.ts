@@ -129,9 +129,12 @@ async function loadTodos(): Promise<TodoItem[]> {
 }
 
 async function saveTodos(items: TodoItem[]): Promise<void> {
-  await TodoDB.remove({})
   for(const item of items) {
-    let i = await TodoDB.insert(item);
+    let update = await TodoDB.updateOne({id: item.id}, item);
+
+    if(!update) {
+      await TodoDB.insert(item);
+    }
   }
 }
 
@@ -200,7 +203,7 @@ async function mountTodo(){
       del.textContent = 'Delete'
       del.addEventListener('click', async  ()=>{
         items = items.filter(x=>x.id !== it.id)
-        await saveTodos(items)
+        await TodoDB.removeOne({id: it.id});
         render()
       })
 
@@ -239,7 +242,7 @@ async function mountTodo(){
       del.textContent = 'Delete'
       del.addEventListener('click', async ()=>{
         items = items.filter(x=>x.id !== it.id)
-        await saveTodos(items)
+        await TodoDB.removeOne({id: it.id});
         render()
       })
 
