@@ -7,7 +7,6 @@ import '/src/styles/components/todo.css'
 import '/src/styles/components/notes.css'
 import { mountAffirmations } from './scripts/affirmations';
 import { mountMusic, getPlayer, setPlayerStateChangeListener, hasPlayed } from "./scripts/music";
-import { mountNotes } from './scripts/notes';
 import { Streak } from './lib/streaks'
 import { LsDb } from './lib/db'
 
@@ -135,9 +134,12 @@ async function loadTodos(): Promise<TodoItem[]> {
 }
 
 async function saveTodos(items: TodoItem[]): Promise<void> {
-  await TodoDB.remove({})
   for(const item of items) {
-    let i = await TodoDB.insert(item);
+    let update = await TodoDB.updateOne({id: item.id}, item);
+
+    if(!update) {
+      await TodoDB.insert(item);
+    }
   }
 }
 
@@ -206,7 +208,7 @@ async function mountTodo(){
       del.textContent = 'Delete'
       del.addEventListener('click', async  ()=>{
         items = items.filter(x=>x.id !== it.id)
-        await saveTodos(items)
+        await TodoDB.removeOne({id: it.id});
         render()
       })
 
@@ -245,7 +247,7 @@ async function mountTodo(){
       del.textContent = 'Delete'
       del.addEventListener('click', async ()=>{
         items = items.filter(x=>x.id !== it.id)
-        await saveTodos(items)
+        await TodoDB.removeOne({id: it.id});
         render()
       })
 
@@ -659,6 +661,82 @@ function mountPomodoro(){
   timeDisplay.textContent = formatSeconds(timer.getRemaining())
 }
 
+/**
+ * Set up notes types and DB
+ */
+type Noid_Note = {
+  content: string;
+  updatedAt: number;
+};
+
+type Note =  {
+  _id: string;
+  content: string;
+  updatedAt: number;
+}
+
+
+export async function mountNotes() {
+  const notesdb = new LsDb<Note>("stickynotes");
+
+  // Mount it into the DOM
+  mountTemplate("tmpl-notes");
+
+  // Now select from the live DOM
+  const tmplNote = document.querySelector('#tmpl-note') as HTMLTemplateElement;
+  const board    = document.querySelector('#notes-board') as HTMLElement;
+  const addBtn   = document.querySelector('#add-note') as HTMLButtonElement;
+
+  let notes: Note[] = (await notesdb.find({})) ?? [];
+
+  async function render() {
+    board.innerHTML = '';
+    for (const note of notes) {
+      const frag    = tmplNote.content.cloneNode(true) as DocumentFragment;
+      const wrapper = frag.firstElementChild as HTMLElement;
+      const body    = wrapper.querySelector('.note-body') as HTMLElement;
+      const btnDelete = wrapper.querySelector('.btn-delete') as HTMLButtonElement;
+
+      wrapper.dataset._id = note._id;
+      body.innerText = note.content;
+
+      body.addEventListener('blur', async () => {
+        note.content = body.innerText ?? '';
+        note.updatedAt = Date.now();
+        await notesdb.updateOne({ _id: note._id }, note);
+      });
+
+      btnDelete.addEventListener('click', async () => {
+        const _id = wrapper.dataset._id!;
+        notes = notes.filter(n => n._id !== _id);
+        wrapper.remove();
+        await notesdb.removeOne({ _id });
+      });
+
+      board.appendChild(wrapper);
+    }
+  }
+
+  addBtn.addEventListener('click', async () => {
+    const newNote: Noid_Note = {
+      content: '',
+      updatedAt: Date.now(),
+    };
+
+    const note_doc = await notesdb.insert(newNote);
+    notes.unshift(note_doc);
+    await render();
+
+    requestAnimationFrame(() => {
+      const el = board.querySelector('.note') as HTMLElement | null;
+      el?.focus();
+    });
+  });
+
+  render();
+}
+
+
 function formatSeconds(s:number){
   const mm = Math.floor(s/60).toString().padStart(2,'0')
   const ss = Math.floor(s%60).toString().padStart(2,'0')
@@ -674,9 +752,19 @@ function navigate(route:Route){
   clearView()
 
   switch(route){
-    case '#/home':
+    case '#/home': //might remove later idk
       mountTemplate('tmpl-home')
+      const today = new Date();
+      const formatted = today.toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      });
+      const dateE1 = document.getElementById("date-display")
+      if (dateE1) dateE1.textContent = formatted;
       break
+
     case '#/pomodoro':
       mountPomodoro()
       // reset any manual close so widget can reappear after user returns to this page
@@ -686,8 +774,7 @@ function navigate(route:Route){
       mountTodo()
       break
     case '#/notes':
-    //   mountTemplate('tmpl-notes')
-      mountNotes(document.querySelector("#app")!);
+      mountNotes();
       break
     case '#/affirmations':
       mountTemplate('tmpl-affirmations')
