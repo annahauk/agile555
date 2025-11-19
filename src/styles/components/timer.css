@@ -107,28 +107,27 @@
   .duck{width:52px;height:52px}
 }
 
-/* mini pop-out widget shown when navigating away from Pomodoro */
 .pomodoro-mini{
-  position:fixed;
-  right:18px;
-  bottom:18px;
+  /* positioning handled by the shared container */
   width:220px;
   background: rgba(255,255,255,0.92);
   border-radius:12px;
   box-shadow:0 10px 30px rgba(6,46,45,0.12);
   padding:10px 12px;
-  z-index:9999;
   display:flex;
   gap:8px;
   align-items:center;
   justify-content:space-between;
   font-size:14px;
+  pointer-events: auto;
 }
 .pomodoro-mini .mini-time{font-weight:700;font-size:16px;color:#053f3d}
+.pomodoro-mini .mini-display{font-weight:700;font-size:16px;color:#053f3d}
 .pomodoro-mini .mini-controls{display:flex;gap:8px}
 .pomodoro-mini button{padding:6px 10px;border-radius:8px;border:none;background:var(--muted);color:#fff;cursor:pointer}
 .pomodoro-mini button.secondary{background:transparent;color:var(--muted);border:1px solid rgba(0,0,0,0.06)}
 .pomodoro-mini .mini-open{background:linear-gradient(135deg,#ffe799,#ffd174);color:#3b2a00}
+.pomodoro-mini .mini-close{background:linear-gradient(135deg,#f72626,#f73c4b);color:#f7d7d7}
 
 @media (max-width:480px){
   .pomodoro-mini{right:12px;left:12px;width:auto;padding:8px}

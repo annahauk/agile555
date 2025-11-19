@@ -6,7 +6,7 @@ import '/src/styles/components/home.css'
 import '/src/styles/components/todo.css'
 import '/src/styles/components/notes.css'
 import { mountAffirmations } from './scripts/affirmations';
-import { mountMusic } from "./scripts/music";
+import { mountMusic, getPlayer, setPlayerStateChangeListener, hasPlayed } from "./scripts/music";
 import { mountNotes } from './scripts/notes';
 import { Streak } from './lib/streaks'
 import { LsDb } from './lib/db'
@@ -22,7 +22,7 @@ async function ensureAudioContext(){
   if(!__audioCtx){
     __audioCtx = new AudioCtx()
   }
-  if(__audioCtx.state === 'suspended'){
+  if(__audioCtx && __audioCtx.state === 'suspended'){
     try{ await __audioCtx.resume() }catch(e){/* ignore */}
   }
   return __audioCtx
@@ -91,6 +91,12 @@ await STREAK.init();
 const viewRoot = document.getElementById('view-root')!
 const navButtons = Array.from(document.querySelectorAll('.nav-btn')) as HTMLButtonElement[]
 const brandBtn = document.querySelector('.brand') as HTMLElement | null
+
+// Create a persistent hidden container for the YouTube player that survives navigation
+const playerContainer = document.createElement('div')
+playerContainer.id = 'persistent-player-container'
+playerContainer.style.display = 'none'
+document.body.appendChild(playerContainer)
 
 // Delegated handler for any element with a data-route attribute (including
 // buttons inside templates). This keeps routing consistent whether the button
@@ -272,63 +278,205 @@ async function mountTodo(){
 // Keep a reference to the running pomodoro timer so we can pause it when navigating away
 let activeTimer: PomodoroTimer | null = null
 
-// mini widget elements and updater
-let __miniEl: HTMLElement | null = null
-let __miniInterval: number | null = null
+// Generic mini widget
+interface MiniWidgetConfig {
+  className: string
+  displayLabel: string
+  toggleTitle: string
+  openTitle: string
+  openRoute: Route
+  getDisplayText: () => string
+  onToggle: () => void
+  shouldShow: () => boolean
+}
 
-function createMiniWidget(){
-  if(__miniEl) return __miniEl
-  const div = document.createElement('div')
-  div.className = 'pomodoro-mini'
-  div.innerHTML = `
-    <div class="mini-time">00:00</div>
-    <div class="mini-controls">
-      <button class="mini-toggle" title="Pause/Resume">⏯</button>
-      <button class="mini-open" title="Open Pomodoro">▢</button>
-    </div>
-  `
-  document.body.appendChild(div)
-  __miniEl = div
+class MiniWidget {
+  private el: HTMLElement | null = null
+  private interval: number | null = null
+  private closed: boolean = false
+  private keepOpenUntil: number = 0
+  private config: MiniWidgetConfig
 
-  // wire buttons
-  const toggle = div.querySelector('.mini-toggle') as HTMLButtonElement
-  const open = div.querySelector('.mini-open') as HTMLButtonElement
-  toggle.addEventListener('click', ()=>{
-    if(!activeTimer) return
-    if(activeTimer.getState() === 'running'){
+  constructor(config: MiniWidgetConfig) {
+    this.config = config
+  }
+
+  private create() {
+    if (this.el) return this.el
+    const div = document.createElement('div')
+    div.className = this.config.className
+    // initial hidden state; will be shown with animation
+    div.style.display = 'none'
+    div.innerHTML = `
+      <div class="mini-display">${this.config.displayLabel}</div>
+      <div class="mini-controls">
+        <button class="mini-toggle" title="${this.config.toggleTitle}">⏯</button>
+        <button class="mini-open" title="${this.config.openTitle}">⏏</button> 
+        <button class="mini-close" title="Close">✕</button>
+      </div>
+    ` // ▢
+
+    // Ensure a shared container exists for stacking mini widgets
+    let container = document.getElementById('mini-widget-container') as HTMLElement | null
+    if (!container) {
+      container = document.createElement('div')
+      container.id = 'mini-widget-container'
+      container.className = 'mini-widget-container'
+      document.body.appendChild(container)
+    }
+
+    // Append into the shared container so widgets stack vertically
+    container.appendChild(div)
+    // Ensure the widget receives pointer events (container may not)
+    div.style.pointerEvents = 'auto'
+    this.el = div
+
+    const toggle = div.querySelector('.mini-toggle') as HTMLButtonElement
+    const open = div.querySelector('.mini-open') as HTMLButtonElement
+    const close = div.querySelector('.mini-close') as HTMLButtonElement
+    toggle.addEventListener('click', () => {
+      // keep the widget shown briefly after user interaction to avoid
+      // transient player state changes hiding it when resuming playback
+      this.keepOpenUntil = Date.now() + 1500
+      this.config.onToggle()
+    })
+    open.addEventListener('click', () => {
+      window.location.hash = this.config.openRoute
+    })
+    close.addEventListener('click', () => this.close())
+
+    return div
+  }
+
+  show() {
+    // respect manual close until user re-enters the owning page
+    if (this.closed) return
+    if (!this.config.shouldShow()) return
+    const el = this.create()
+    // cancel any pending hide animation
+    el.classList.remove('mini-closing')
+    el.style.display = 'flex'
+    // allow the browser to paint before adding the open class
+    requestAnimationFrame(() => el.classList.add('mini-open'))
+
+    if (this.interval) return
+    this.interval = window.setInterval(() => {
+      if (!this.config.shouldShow() && Date.now() > this.keepOpenUntil) {
+        this.hide()
+        return
+      }
+      const display = el.querySelector('.mini-display') as HTMLElement
+      display.textContent = this.config.getDisplayText()
+    }, 250) as unknown as number
+  }
+
+  hide() {
+    if (this.interval) {
+      clearInterval(this.interval)
+      this.interval = null
+    }
+    if (!this.el) return
+    const el = this.el
+    // play closing animation, then hide
+    el.classList.remove('mini-open')
+    el.classList.add('mini-closing')
+    // after animation completes, remove from view
+    const cleanup = () => {
+      el.style.display = 'none'
+      el.classList.remove('mini-closing')
+      el.removeEventListener('animationend', cleanup)
+    }
+    // fallback timeout in case animationend doesn't fire
+    el.addEventListener('animationend', cleanup)
+    setTimeout(cleanup, 300)
+  }
+
+  // mark this widget as closed by the user; it will not re-open until resetClosed() is called
+  close(){
+    this.closed = true
+    this.hide()
+  }
+
+  // clear the closed flag so the widget can show again
+  resetClosed(){
+    this.closed = false
+  }
+}
+
+// Pomodoro mini widget instance
+const pomodoroMini = new MiniWidget({
+  className: 'pomodoro-mini',
+  displayLabel: '00:00',
+  toggleTitle: 'Pause/Resume',
+  openTitle: 'Open Pomodoro',
+  openRoute: '#/pomodoro',
+  getDisplayText: () => {
+    if (!activeTimer) return '00:00'
+    return formatSeconds(Math.max(0, activeTimer.getRemaining()))
+  },
+  onToggle: () => {
+    if (!activeTimer) return
+    if (activeTimer.getState() === 'running') {
       activeTimer.pause()
     } else {
       activeTimer.start()
     }
-    // UI will be updated by the interval
-  })
-  open.addEventListener('click', ()=>{
-    window.location.hash = '#/pomodoro'
-  })
+  },
+  shouldShow: () => !!activeTimer && activeTimer.getState() !== 'stopped',
+})
 
-  return div
+// Music mini widget instance
+const musicMini = new MiniWidget({
+  className: 'music-mini',
+  displayLabel: '♪',
+  toggleTitle: 'Pause/Resume Music',
+  openTitle: 'Open Music',
+  openRoute: '#/music',
+  getDisplayText: () => {
+    if (!getPlayer()) return '♪'
+    const player = getPlayer()!
+    try{
+      const state = player.getPlayerState()
+      if(state === (window as any).YT?.PlayerState?.PLAYING){
+        return 'Playing'
+      }
+      else if(state === (window as any).YT?.PlayerState?.PAUSED){
+        return 'Paused'
+      }
+      return '♪'
+    }catch(e){
+      return '♪'
+    }
+  },
+  onToggle: () => {
+    const player = getPlayer()
+    if (!player) return
+    // YT.PlayerState.PLAYING = 1, PAUSED = 2
+    if (player.getPlayerState() === 1) {
+      player.pauseVideo()
+    } else {
+      player.playVideo()
+    }
+  },
+  shouldShow: () => {
+    const player = getPlayer()
+    if (!player || !hasPlayed()) return false
+    try{
+      const state = player.getPlayerState()
+      const YTState = (window as any).YT?.PlayerState
+      return state === YTState?.PLAYING || state === YTState?.PAUSED
+    }catch(e){
+      return false
+    }
+  },
+})
+
+function showMiniWidget(mini: MiniWidget) {
+  mini.show()
 }
 
-function showMiniWidget(){
-  if(!activeTimer) return
-  const el = createMiniWidget()
-  el.style.display = 'flex'
-  // start interval to update time display
-  if(__miniInterval) return
-  __miniInterval = window.setInterval(()=>{
-    if(!activeTimer) return
-    const timeEl = el.querySelector('.mini-time') as HTMLElement
-    const rem = activeTimer.getRemaining()
-    timeEl.textContent = formatSeconds(Math.max(0, rem))
-  }, 250) as unknown as number
-}
-
-function hideMiniWidget(){
-  if(__miniInterval){
-    clearInterval(__miniInterval)
-    __miniInterval = null
-  }
-  if(__miniEl) __miniEl.style.display = 'none'
+function hideMiniWidget(mini: MiniWidget) {
+  mini.hide()
 }
 
 function mountPomodoro(){
@@ -486,8 +634,6 @@ function mountPomodoro(){
     })
   }
 
-  
-
   durationButtons.forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const mins = Number(btn.dataset.min)
@@ -533,6 +679,8 @@ function navigate(route:Route){
       break
     case '#/pomodoro':
       mountPomodoro()
+      // reset any manual close so widget can reappear after user returns to this page
+      pomodoroMini.resetClosed()
       break
     case '#/todo':
       mountTodo()
@@ -548,17 +696,45 @@ function navigate(route:Route){
     case '#/music':
       mountTemplate('tmpl-music')
       mountMusic();
+      // reset manual close state so music widget can reappear after visiting the music page
+      musicMini.resetClosed()
+      // For spinning record animation
+      setPlayerStateChangeListener((state) => {
+        const recordElement = document.getElementById("record") as HTMLElement | null;
+        if (!recordElement) return;
+        // YT.PlayerState.PLAYING = 1
+        if (state === 1) {
+          recordElement.classList.add('spinning');
+        } else {
+          recordElement.classList.remove('spinning');
+        }
+      });
+      // Sync initial state in case music was already playing
+      const player = getPlayer();
+      const recordElement = document.getElementById("record") as HTMLElement | null;
+      if (player && recordElement) {
+        if (player.getPlayerState() === 1) {
+          recordElement.classList.add('spinning');
+        } else {
+          recordElement.classList.remove('spinning');
+        }
+      }
       break
     case '#/journal':
       mountTemplate('tmpl-journal')
       break
   }
 
-  // show a mini popout widget when not on the Pomodoro page and a timer is active
+  // show mini widgets when not on their respective pages
   if(route !== '#/pomodoro' && activeTimer){
-    showMiniWidget()
+    showMiniWidget(pomodoroMini)
   } else {
-    hideMiniWidget()
+    hideMiniWidget(pomodoroMini)
+  }
+  if(route !== '#/music' && getPlayer()){
+    showMiniWidget(musicMini)
+  } else {
+    hideMiniWidget(musicMini)
   }
 }
 

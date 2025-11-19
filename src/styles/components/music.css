@@ -33,3 +33,36 @@
 @media (max-width:560px){
   .music-display{font-size:44px;padding:16px}
 }
+
+/* mini pop-out widget shown when navigating away from Music */
+.music-mini{
+  /* positioned by shared .mini-widget-container */
+  width:220px;
+  background: rgba(255,255,255,0.92);
+  border-radius:12px;
+  box-shadow:0 10px 30px rgba(102, 51, 153, 0.12);
+  padding:10px 12px;
+  display:flex;
+  gap:8px;
+  align-items:center;
+  justify-content:space-between;
+  font-size:14px;
+  pointer-events: auto;
+}
+.music-mini .mini-display{font-weight:700;font-size:16px;color:#053f3d}
+.music-mini .mini-controls{display:flex;gap:8px}
+.music-mini button{padding:6px 10px;border-radius:8px;border:none;background:var(--muted);color:#fff;cursor:pointer}
+.music-mini button.secondary{background:transparent;color:var(--muted);border:1px solid rgba(0,0,0,0.06)}
+.music-mini .mini-open{background:linear-gradient(135deg,#a78bfa,#9370db);color:#fff}
+.music-mini .mini-close{background:linear-gradient(135deg,#f72626,#f73c4b);color:#f7d7d7}
+
+@media (max-width:480px){
+  .music-mini{right:12px;left:12px;width:auto;padding:8px}
+}
+
+/* loading image shown while YouTube player is being created */
+.record-loading{
+  width:256px;
+  height:256px;
+  display:block;
+}
