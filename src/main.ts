@@ -7,7 +7,6 @@ import '/src/styles/components/todo.css'
 import '/src/styles/components/notes.css'
 import { mountAffirmations } from './scripts/affirmations';
 import { mountMusic } from "./scripts/music";
-import { mountNotes } from './scripts/notes';
 import { Streak } from './lib/streaks'
 import { LsDb } from './lib/db'
 
@@ -516,6 +515,82 @@ function mountPomodoro(){
   timeDisplay.textContent = formatSeconds(timer.getRemaining())
 }
 
+/**
+ * Set up notes types and DB
+ */
+type Noid_Note = {
+  content: string;
+  updatedAt: number;
+};
+
+type Note =  {
+  _id: string;
+  content: string;
+  updatedAt: number;
+}
+
+
+export async function mountNotes() {
+  const notesdb = new LsDb<Note>("stickynotes");
+
+  // Mount it into the DOM
+  mountTemplate("tmpl-notes");
+
+  // Now select from the live DOM
+  const tmplNote = document.querySelector('#tmpl-note') as HTMLTemplateElement;
+  const board    = document.querySelector('#notes-board') as HTMLElement;
+  const addBtn   = document.querySelector('#add-note') as HTMLButtonElement;
+
+  let notes: Note[] = (await notesdb.find({})) ?? [];
+
+  async function render() {
+    board.innerHTML = '';
+    for (const note of notes) {
+      const frag    = tmplNote.content.cloneNode(true) as DocumentFragment;
+      const wrapper = frag.firstElementChild as HTMLElement;
+      const body    = wrapper.querySelector('.note-body') as HTMLElement;
+      const btnDelete = wrapper.querySelector('.btn-delete') as HTMLButtonElement;
+
+      wrapper.dataset._id = note._id;
+      body.innerText = note.content;
+
+      body.addEventListener('blur', async () => {
+        note.content = body.innerText ?? '';
+        note.updatedAt = Date.now();
+        await notesdb.updateOne({ _id: note._id }, note);
+      });
+
+      btnDelete.addEventListener('click', async () => {
+        const _id = wrapper.dataset._id!;
+        notes = notes.filter(n => n._id !== _id);
+        wrapper.remove();
+        await notesdb.removeOne({ _id });
+      });
+
+      board.appendChild(wrapper);
+    }
+  }
+
+  addBtn.addEventListener('click', async () => {
+    const newNote: Noid_Note = {
+      content: '',
+      updatedAt: Date.now(),
+    };
+
+    const note_doc = await notesdb.insert(newNote);
+    notes.unshift(note_doc);
+    await render();
+
+    requestAnimationFrame(() => {
+      const el = board.querySelector('.note') as HTMLElement | null;
+      el?.focus();
+    });
+  });
+
+  render();
+}
+
+
 function formatSeconds(s:number){
   const mm = Math.floor(s/60).toString().padStart(2,'0')
   const ss = Math.floor(s%60).toString().padStart(2,'0')
@@ -551,8 +626,7 @@ function navigate(route:Route){
       mountTodo()
       break
     case '#/notes':
-    //   mountTemplate('tmpl-notes')
-      mountNotes(document.querySelector("#app")!);
+      mountNotes();
       break
     case '#/affirmations':
       mountTemplate('tmpl-affirmations')
