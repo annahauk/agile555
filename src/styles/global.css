@@ -59,3 +59,36 @@ body,html {
   0% { transform: scale(1) translateY(0); opacity: 0.8; }
   100% { transform: scale(1.2) translateY(-2%); opacity: 0.6; }
 }
+
+/* Shared container for stacking mini widgets (positioned bottom-right)
+   Widgets are appended into this container so they stack vertically and
+   can be managed by the page scripts. Using column-reverse places the
+   first added widget at the bottom and new widgets above it. */
+.mini-widget-container{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  display:flex;
+  flex-direction:column-reverse;
+  gap:8px;
+  align-items:flex-end;
+  z-index:9999;
+  pointer-events: none; /* allow container to be non-interfering; children enable pointer-events */
+}
+
+/* Mini widget appear/disappear animations and close button */
+.pomodoro-mini, .music-mini {
+  opacity: 0;
+  transform: translateY(8px) scale(0.995);
+  transition: transform 180ms cubic-bezier(.2,.8,.2,1), opacity 180ms linear;
+}
+.mini-open {
+  opacity: 1 !important;
+  transform: translateY(0) scale(1) !important;
+}
+.mini-closing {
+  opacity: 0 !important;
+  transform: translateY(8px) scale(0.995) !important;
+}
+
+
