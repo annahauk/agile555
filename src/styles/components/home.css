@@ -198,3 +198,14 @@
     text-align: left;
   }
 }
+
+/* code for date display on home page */
+#date-display {
+  margin: 0;
+  margin-bottom: 4px;
+  font-size: 1.1rem;        
+  line-height: 1.4;
+  color:#053f3d;      
+  opacity: 0.9;             
+  font-weight: 600;
+}
