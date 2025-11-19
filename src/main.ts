@@ -528,9 +528,19 @@ function navigate(route:Route){
   clearView()
 
   switch(route){
-    case '#/home':
+    case '#/home': //might remove later idk
       mountTemplate('tmpl-home')
+      const today = new Date();
+      const formatted = today.toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      });
+      const dateE1 = document.getElementById("date-display")
+      if (dateE1) dateE1.textContent = formatted;
       break
+
     case '#/pomodoro':
       mountPomodoro()
       break
