@@ -6,28 +6,33 @@
   --accent: #fff6c7;
   --muted: #648b86;
   --glass: rgba(255,255,255,0.7);
+  /* Themeable colors and background image — updated at runtime */
+  --nav-bg: #b3eee6;
+  --pond-bg-image: url('/src/assets/pond-bg-day.png') center/cover no-repeat fixed;
 }
 
 
 body,html {
   height:100%;
+  overflow: hidden;
   margin:0;
+  overscroll-behavior: none;
   font-family: Segoe UI, Inter, system-ui, Segoe UI, Roboto, 'Helvetica Neue', Arial;
 }
 
 .app-center {
   min-height: 100vh;
   /* Layered pond effect: gentle vertical gradient + diagonal light shimmer */
-  background:
-    radial-gradient(circle at 30% 20%, rgba(255,255,255,0.25) 0%, transparent 50%),
-    linear-gradient(180deg, var(--pond-sky) 0%, var(--pond-day) 45%, var(--pond-deep) 75%, var(--pond-shadow) 100%);
+  /* Background image (watercolor pond) with soft translucent gradient overlays */
+    background:
+      radial-gradient(circle at 30% 20%, rgba(255,255,255,0.20) 0%, transparent 50%),
+      var(--pond-bg-image);
   display:flex;
-  align-items:center;
+  align-items:flex-start;
   justify-content:center;
   /* reserve space at top for fixed header; header height is provided via --header-height */
-  padding: calc(24px + var(--header-height, 64px)) 24px 24px 24px;
+  padding: calc(80px + var(--header-height, 64px)) 24px 24px 24px;
 }
-
 .card {
   background:
     linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7)),
@@ -41,23 +46,6 @@ body,html {
   position: relative;
   overflow: hidden;
   border: 1px solid rgba(5, 63, 61, 0.08);
-}
-
-
-.pond-surface{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 10% 10%, rgba(255,255,255,0.12), transparent 10%), radial-gradient(circle at 90% 90%, rgba(255,255,255,0.08), transparent 12%)}
-
-.app-center::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 40% 40%, rgba(255,255,255,0.15), transparent 40%);
-  animation: ripple 12s ease-in-out infinite alternate;
-  pointer-events: none;
-}
-
-@keyframes ripple {
-  0% { transform: scale(1) translateY(0); opacity: 0.8; }
-  100% { transform: scale(1.2) translateY(-2%); opacity: 0.6; }
 }
 
 /* Shared container for stacking mini widgets (positioned bottom-right)
@@ -76,7 +64,7 @@ body,html {
   pointer-events: none; /* allow container to be non-interfering; children enable pointer-events */
 }
 
-/* Mini widget appear/disappear animations and close button */
+/* Mini widget for moving off the page of the timer and audio */
 .pomodoro-mini, .music-mini {
   opacity: 0;
   transform: translateY(8px) scale(0.995);

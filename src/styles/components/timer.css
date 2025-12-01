@@ -1,42 +1,44 @@
 .pomodoro{
   display:flex;
+  /* start container higher up, 20px down from nav bar */
   flex-direction:column;
   gap:12px;
   align-items:center;
   justify-content:center;
   text-align:center;
-  color:#053f3d;
-  /* ensure the timer view accounts for the fixed header and centers vertically */
-  min-height: calc(100vh - var(--header-height, 64px));
-  padding: 24px 16px; /* give some breathing room on mobile */
   box-sizing: border-box;
 }
 .pomodoro-card{
   width:520px;
   max-width:95vw;
-  padding:20px; /* slightly less tall */
-  /* more translucent card so the pond/page shows through a bit */
-  background: rgba(255,255,255,0.82);
+  padding:20px;
+  background: rgba(255,255,255,0.72);
   border-radius: 18px;
   box-shadow: 0 8px 22px rgba(6,46,45,0.06);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   z-index: 4; /* sit above any decorative background ducks */
   margin: 0 auto;
-  transition: background 0.2s ease, padding 0.2s ease;
+  /* place card below the fixed header instead of vertically centering */
+  align-self: flex-start;
+  margin-top: 20px;
 }
 .timer-display{
   font-size:72px;
   font-weight:700;
-  background:linear-gradient(180deg,rgba(255,255,255,0.95),rgba(255,255,255,0.7));
+  /* font color white */
+  color:#9badb0;
+  background:#fff5d3;
   padding:28px;
+  z-index: 5;
   border-radius:16px;
   min-width:260px;
   width:100%;
   box-sizing:border-box;
 }
+
 .controls{display:flex;gap:8px}
-.controls button{padding:8px 12px;border-radius:10px;border:none;background:var(--muted);color:white;font-weight:600;cursor:pointer;min-width:84px}
+.controls button{padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.25);background:var(--muted);color:white;font-weight:600;cursor:pointer;min-width:84px}
 .controls button.secondary{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.25)}
 
 /* Start/Pause active styles */
@@ -47,24 +49,41 @@
 .controls button.reset-active{background:linear-gradient(90deg,#d1e8ff,#9fd7ff);color:#052836;border:none;box-shadow:0 6px 14px rgba(26,115,143,0.08)}
 
 /* Timer title */
-.timer-title{font-size:32px;color:var(--muted);font-weight:600;margin-bottom:6px}
+.timer-title{font-size:32px;
+  color:var(--muted);
+  font-weight:600;
+  margin-bottom:6px}
+
+/* small subheading under title */
+.timer-subtitle {
+  font-size: 21px;
+  color: rgba(100, 139, 134, 0.9);
+  margin-bottom: 16px;
+}
+
 .progress-wrap{width:100%;height:12px;background:rgba(0,0,0,0.08);border-radius:10px;overflow:hidden}
 .progress{height:100%;background:linear-gradient(90deg,#ffcc66,#ffd88d);width:0%;transition:width 0.3s linear}
 
 /* duck container */
-.duck-stage{
-  position:relative;
-  height:96px; /* slightly taller to match the larger home ducks/space */
-  width:100%;
-  overflow:hidden;
+/* Bigger hero area */
+.duck-stage {
+  position: relative;
+  height: 160px;    /* was 96px */
+  width: 100%;
+  overflow: hidden;
 }
-.duck{
-  position:absolute;
-  left:8px;
-  top:8px;
-  width:64px;
-  height:64px;
-  transition:transform 0.3s linear;
+
+/* Bigger duck logo */
+.duck {
+  position: absolute;
+  left: 50%;
+  top: 12px;
+  transform: translateX(-50%);
+  width: 120px;      /* was 64px */
+  height: 120px;     /* was 64px */
+  border-radius: 999px;
+  padding: 8px;
+  box-shadow: 0 6px 18px rgba(6, 46, 45, 0.12);
 }
 .duck.floating{animation:float 3s ease-in-out infinite}
 @keyframes float{
@@ -131,4 +150,11 @@
 
 @media (max-width:480px){
   .pomodoro-mini{right:12px;left:12px;width:auto;padding:8px}
+}
+/* for the big duck logo */
+.home-duck{
+  position:absolute;
+  width:100px;
+  height:100px;
+  transition:transform 2s linear;
 }

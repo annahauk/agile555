@@ -1,0 +1,44 @@
+/* Affirmations card styling */
+.affirmation-card{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:36px 28px;
+  border-radius:18px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.88));
+  box-shadow: 0 12px 36px rgba(6,46,45,0.08);
+  max-width:720px;
+  margin: 0 auto;
+}
+
+.affirmation-card h2{
+  margin:0;
+  font-size:32px;
+  color: #063635;
+  font-weight: 600;
+}
+
+.affirmation-card p{
+  margin:0;
+  font-size:40px;
+  line-height:1.6;
+  color: #eabe88;
+  font-weight:600;
+  max-width:760px;
+}
+
+.affirmation-card .controls{display:flex;gap:10px;align-items:center}
+.affirmation-card .controls button{padding:10px 14px;border-radius:10px;border:none;background: #bdeee0;color:#033;cursor:pointer;font-weight:700}
+.affirmation-card .controls button:hover{transform:translateY(-2px)}
+.affirmation-card .controls button:active{transform:translateY(0)}
+
+@media (max-width:600px){
+  .affirmation-card{padding:20px}
+  .affirmation-card p{font-size:1.05rem}
+  .affirmation-card h2{font-size:1.25rem}
+  .affirmation-card .controls{flex-direction:column}
+  .affirmation-card .controls button{width:100%}
+}

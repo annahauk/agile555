@@ -4,6 +4,7 @@ import '/src/styles/components/timer.css'
 import '/src/styles/components/nav.css'
 import '/src/styles/components/home.css'
 import '/src/styles/components/todo.css'
+import '/src/styles/components/affirmations.css'
 import '/src/styles/components/notes.css'
 import { mountAffirmations } from './scripts/affirmations';
 import { mountMusic, getPlayer, setPlayerStateChangeListener, hasPlayed } from "./scripts/music";
@@ -86,6 +87,38 @@ type Route = '#/home' | '#/pomodoro' | '#/todo' | '#/notes' | '#/affirmations' |
  */
 export const STREAK = new Streak();
 await STREAK.init();
+
+// Time-of-day theme switching: updates CSS variables for nav color and background image
+function applyTimeOfDayTheme(){
+  try{
+    const now = new Date();
+    const h = now.getHours();
+    // 6:00 - 14:59 => day; 15:00 - 19:59 => sunset; 20:00 - 5:59 => night
+    let nav = '#b3eee6'
+    let bg = "url('/src/assets/pond-bg-day.png') center/cover no-repeat fixed"
+    if(h >= 6 && h < 15){
+      nav = '#b3eee6'
+      bg = "url('/src/assets/pond-bg-day.png') center/cover no-repeat fixed"
+    } else if(h >= 15 && h < 20){
+      nav = '#a399b1'
+      bg = "url('/src/assets/pond-bg-Sunset.png') center/cover no-repeat fixed"
+    } else {
+      nav = '#2b366b'
+      bg = "url('/src/assets/pond-bg-night.png') center/cover no-repeat fixed"
+    }
+    document.documentElement.style.setProperty('--nav-bg', nav)
+    document.documentElement.style.setProperty('--pond-bg-image', bg)
+    // brand text color: dark for day, white for sunset/night
+    const brandColor = (h >= 6 && h < 15) ? '#053f3d' : '#ffffff'
+    document.documentElement.style.setProperty('--brand-color', brandColor)
+  }catch(e){
+    console.warn('Failed to apply time-of-day theme', e)
+  }
+}
+
+// apply immediately and refresh every minute in case the user crosses a threshold
+applyTimeOfDayTheme()
+setInterval(applyTimeOfDayTheme, 60 * 1000)
 
 const viewRoot = document.getElementById('view-root')!
 const navButtons = Array.from(document.querySelectorAll('.nav-btn')) as HTMLButtonElement[]
@@ -752,7 +785,7 @@ function navigate(route:Route){
   clearView()
 
   switch(route){
-    case '#/home': //might remove later idk
+    case '#/home':
       mountTemplate('tmpl-home')
       const today = new Date();
       const formatted = today.toLocaleDateString("en-US", {
