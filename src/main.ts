@@ -6,6 +6,7 @@ import '/src/styles/components/home.css'
 import '/src/styles/components/todo.css'
 import '/src/styles/components/affirmations.css'
 import '/src/styles/components/notes.css'
+import '/src/styles/components/views.css'
 import { mountAffirmations } from './scripts/affirmations';
 import { mountMusic, getPlayer, setPlayerStateChangeListener, hasPlayed } from "./scripts/music";
 import { Streak } from './lib/streaks'
