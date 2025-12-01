@@ -1,0 +1,14 @@
+.secondary-cta {
+  background: linear-gradient(135deg, #ffe799, #ffd174);
+  font-weight: 700;
+  box-shadow: 0 8px 18px rgba(196, 132, 15, 0.28);
+  padding: 12px 20px;
+  font-size: 1.05rem;
+  min-width: 90px;
+  border-radius: 12px;
+}
+
+.primary-cta:hover, .secondary-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(196, 132, 15, 0.38);
+}
