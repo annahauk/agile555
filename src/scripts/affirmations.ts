@@ -7,7 +7,12 @@ export function mountAffirmations() {
     "Each step forward is progress.",
     "Your hard work is paying off.",
     "You deserve rest and kindness.",
-    "You are learning and growing every day."
+    "You are learning and growing every day.",
+    "Believe in yourself and your abilities.",
+    "Challenges are opportunities to improve.",
+    "You have the power to create change.",
+    "Your efforts make a difference.",
+    "Stay positive and keep moving forward."
   ];
 
   const randomAffirmation = affirmations[Math.floor(Math.random() * affirmations.length)];

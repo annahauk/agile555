@@ -4,10 +4,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 14px 22px;
-  /* stronger, slightly more opaque gradient to stand out from the pond background */
-  background: #adebdc;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  /* background color swapped by theme JS via --nav-bg */
+  background: var(--nav-bg, #b3eee6);
   position: fixed;
   top: 0; left: 0; right: 0;
   box-sizing: border-box;
@@ -18,12 +16,18 @@
 }
 
 .brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
   font-weight:800;
-  color:#053f3d;
+  color: var(--brand-color, #053f3d);
   font-size:1.25rem;
   letter-spacing:0.02em;
   cursor:pointer; /* make it clear the brand is clickable */
 }
+
+.brand-logo{width:36px;height:36px;object-fit:contain;display:block}
+.brand-text{display:inline-block}
 .site-nav{display:flex;gap:8px;align-items:center;padding-bottom:4px;flex-wrap:wrap}
 .nav-btn{
     background: rgba(255,255,255,0.96);
