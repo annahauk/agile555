@@ -44,7 +44,7 @@ export async function MountJournal(): Promise<any> {
     /**
      * Editor setup
      */
-    let editor = new EasyMDE({element: edit_area});
+    let editor = new EasyMDE({element: edit_area, "previewImagesInEditor": true});
     editor.codemirror.on("blur", async(e) => {
         if(!CURRENT_JOURNAL_ID) {
             return;
