@@ -116,3 +116,14 @@ Journal card
     border-radius: 10px;
     cursor: pointer;
 }
+
+/* Editor modifications */
+.EasyMDEContainer {
+    height:100% !important;
+}
+.editor-preview > p > img {
+    max-width: 50%;
+}
+.CodeMirror {
+    height: 90% !important;
+}
