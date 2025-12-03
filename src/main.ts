@@ -7,10 +7,12 @@ import '/src/styles/components/todo.css'
 import '/src/styles/components/affirmations.css'
 import '/src/styles/components/notes.css'
 import '/src/styles/components/views.css'
+import '/src/styles/components/journal.css'
 import { mountAffirmations } from './scripts/affirmations';
 import { mountMusic, getPlayer, setPlayerStateChangeListener, hasPlayed } from "./scripts/music";
 import { Streak } from './lib/streaks'
 import { LsDb } from './lib/db'
+import { MountJournal } from './scripts/journal'
 
 // small helper to play a short chime using Web Audio (no external asset needed)
 // Shared AudioContext and mute state (persisted)
@@ -843,6 +845,7 @@ function navigate(route:Route){
       break
     case '#/journal':
       mountTemplate('tmpl-journal')
+      MountJournal();
       break
   }
 

@@ -8,3 +8,9 @@ export type JsTypeMap = {
     symbol: symbol;
     bigint: bigint;
 };
+
+export const date_formatter = new Intl.DateTimeFormat('en-US', { 
+    month: '2-digit', 
+    day: '2-digit', 
+    year: 'numeric' 
+});

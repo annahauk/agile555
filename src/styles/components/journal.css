@@ -1,0 +1,100 @@
+/* journal root div (card) */
+.journal-root {
+    width: 80vw;
+    height: 70vh;
+    margin-left:4vw;
+}
+
+/* journal header text */
+.journal-header {
+    position: absolute;
+    text-align: left;
+    top:0;
+    margin-top: 20px;
+    font-size: 2em;
+    font-family: New Century Schoolbook, TeX Gyre Schola, serif;
+    color:black;
+    pointer-events: none;
+}
+
+.journal-container {
+    display: flex;
+    margin-top: 40px;
+    height: 100%;
+    gap: 10px;
+}
+
+.journal-container > div{
+    background: #ffecb3;
+    border: 3px solid #ffcc80;
+    border-radius: 5px;
+    padding: 8px;
+}
+
+/**
+    Editor and selector container elements
+**/
+.journal-select { 
+    /* flex:1 1 30%; */
+    flex-grow:1;
+    flex-basis:30%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+        
+.journal-edit { 
+    /* flex:0 1 70%; */
+    flex-basis:70%;
+}
+.journal-edit-area {
+    width:100%;
+    height:100%;
+}
+
+/**
+Journal card
+**/
+.journal-entry {
+    position: relative;
+    display: block;
+    margin-top: 5px;
+    width:90%;
+    height:70px;
+    border-bottom: 1px solid gray;
+    cursor: pointer;
+}
+.journal-entry > p {
+    margin-left:5px;
+    color:black;
+    font-size: small;
+}
+.journal-entry > input {
+    margin-left:5px;
+    color:black;
+    font-size: small;
+}
+.journal-entry-title {
+    font-weight: bold;
+}
+.journal-entry-title-edit {
+    display:none;
+}
+.journal-entry-delete {
+    position: absolute;
+    top:0;
+    right:0;
+    margin: 5px;
+    border-radius: 10px;
+    background-color: red;
+    outline: none;
+    border: 1px solid rgb(255, 114, 114);
+    color: white;
+    cursor: pointer;
+}
+
+.journal-new-button {
+    width:100%;
+    margin: 3px;
+    height: 30px;
+    border-radius: 10px;
+}
