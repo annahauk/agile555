@@ -2,6 +2,8 @@ import EasyMDE from "easymde";
 import { LsDb, WithId } from "../lib/db";
 import { date_formatter } from "../lib/utils";
 
+import "../styles/components/home.css";
+
 export interface Journal {
     last_opened: string | null; //_id
     key:string; // journal base
@@ -87,6 +89,20 @@ export async function MountJournal(): Promise<any> {
         CURRENT_JOURNAL_ID = j._id;
         editor.value(j.content);
 
+        // color selected editor
+        for(const el of document.getElementsByClassName("journal-entry")) {
+            let id = el.getAttribute("data-id");
+            if(id) {
+                if(id === j._id) {
+                    // color
+                    el.classList.add("journal-entry-selected");
+                } else {
+                    // un-color
+                    el.classList.remove("journal-entry-selected");
+                }
+            }
+        }
+
         // update last opened
         await jdb.updateOne({key: JOURNAL_BASE_KEY}, {last_opened: j._id});
     }
@@ -119,9 +135,16 @@ export async function MountJournal(): Promise<any> {
             e.stopPropagation();
             title.style.display = "none";
             title_edit.style.display = "block";
+            title_edit.focus();
+            title_edit.select();
         }
         // hide on blur and save new name
         title_edit.onblur = async(e) => {
+            // dont allow empty titles
+            if(title_edit.value.length < 1) {
+                alert(`Entry title cannot be empty.`);
+                return;
+            }
             console.log(`edit title:: ${title.textContent} --> ${title_edit.value}`);
 
             // insert to db
@@ -157,6 +180,7 @@ export async function MountJournal(): Promise<any> {
             // if deleting the active journal, remove lastopened
             if(entry._id === CURRENT_JOURNAL_ID) {
                 await jdb.updateOne({key: JOURNAL_BASE_KEY}, {last_opened: null});
+                editor.value("");
             }
 
             element.remove();
