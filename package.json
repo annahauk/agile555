@@ -11,5 +11,8 @@
     "@types/youtube": "^0.1.2",
     "typescript": "^5.0.0",
     "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "easymde": "^2.20.0"
   }
 }

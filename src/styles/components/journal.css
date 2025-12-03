@@ -1,0 +1,130 @@
+/* journal root div (card) */
+.journal-root {
+    width: 80vw;
+    height: 70vh;
+    margin-left:4vw;
+    font-family: Segoe UI, Inter, system-ui, Segoe UI, Roboto, 'Helvetica Neue', Arial;
+}
+
+/* journal header text */
+.journal-header {
+    position: absolute;
+    text-align: left;
+    top:0;
+    margin-top: 20px;
+    font-size: 2em;
+    font-family: New Century Schoolbook, TeX Gyre Schola, serif;
+    color:black;
+    pointer-events: none;
+}
+
+.journal-container {
+    display: flex;
+    margin-top: 40px;
+    height: 100%;
+    gap: 10px;
+}
+
+.journal-container > div{
+    padding: 8px;
+    border-radius: 10px;
+}
+
+/**
+    Editor and selector container elements
+**/
+.journal-select { 
+    /* flex:1 1 30%; */
+    flex-grow:1;
+    flex-basis:20%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+        
+.journal-edit { 
+    /* flex:0 1 70%; */
+    flex-basis:80%;
+}
+.journal-edit-area {
+    width:100%;
+    height:100%;
+}
+
+/**
+Journal card
+**/
+.journal-entry {
+    position: relative;
+    display: block;
+    margin-top: 5px;
+    width:100%;
+    height:70px;
+    border: 1px solid #80808069;
+    background-color: rgba(255, 255, 255, 0.397);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    cursor: pointer;
+}
+.journal-entry > p {
+    margin-left:5px;
+    color:black;
+    font-size: small;
+}
+.journal-entry > input {
+    margin-left:5px;
+    color:black;
+    font-size: small;
+}
+.journal-entry-selected {
+    background-color: rgba(224, 188, 96, 0.356);
+}
+.journal-entry-title {
+    font-weight: bold;
+    width:fit-content;
+}
+.journal-entry-title-edit {
+    display:none;
+    margin-top: 13px;
+    margin-bottom: 13px;
+    margin-left: 0px;
+    background: none;
+    border: none !important;
+    outline: none !important;
+    font-weight: bold;
+    text-decoration:wavy;
+}
+.journal-entry-delete {
+    position: absolute;
+    top:0;
+    right:0;
+    margin: 5px;
+    height: 25px;
+    border-radius: 10px;
+    border: none;
+    background-color: red;
+    outline: none;
+    color: white;
+    cursor: pointer;
+}
+.journal-entry-delete:hover {
+    background-color: rgb(255, 102, 102);
+}
+
+.journal-new-button {
+    width:100%;
+    margin: 3px;
+    height: 50px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+/* Editor modifications */
+.EasyMDEContainer {
+    height:100% !important;
+}
+.editor-preview > p > img {
+    max-width: 50%;
+}
+.CodeMirror {
+    height: 90% !important;
+}

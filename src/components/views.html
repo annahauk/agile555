@@ -28,8 +28,23 @@
   <div class="card placeholder"><h2>Daily Affirmations</h2><p>Affirmations placeholder.</p></div>
 </template>
 
+<!--
+Journal
+-->
 <template id="tmpl-journal">
-  <div class="card placeholder"><h2>Journal</h2><p>Journal placeholder.</p></div>
+  <div class="card">
+    <div class="journal-root" id="jounral-root">
+      <h1 class="journal-header">My Journal</h1>
+      <div class="journal-container">
+        <div class="journal-select" id="journal-select">
+          <button class="journal-new-button secondary-cta" id="journal-new-button">New Journal</button>
+        </div>
+        <div class="journal-edit" id="journal-edit">
+          <textarea class="journal-edit-area" id="journal-edit-area"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <template id="tmpl-notes">
