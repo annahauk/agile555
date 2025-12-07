@@ -61,7 +61,7 @@ export async function MountJournal(): Promise<any> {
     let _create_journal = async (entry?:WithId<JournalEntry>) => {
         let j = entry ?? await jdb.insert({
             key: JOURNAL_ENTRY_KEY,
-            title: "New Entree",
+            title: "New Entry",
             last_edited: date_formatter.format(new Date()),
             content: "",
         } as JournalEntry);
@@ -81,6 +81,10 @@ export async function MountJournal(): Promise<any> {
      */
     let _edit = async(id:string): Promise<any> => {
         console.log(`edit::`, id);
+
+        // show the editor
+        edit_container.style.display = "block";
+
         let j = await jdb.findOne({_id: id}) as WithId<JournalEntry>;
         if(!j) {
             alert(`Journal not found!`);
@@ -184,6 +188,12 @@ export async function MountJournal(): Promise<any> {
             }
 
             element.remove();
+
+            // check if no entrees left
+            if((await jdb.find({key: JOURNAL_ENTRY_KEY})).length < 1) {
+                // hide editor
+                edit_container.style.display = "none";
+            }
         }
         element.appendChild(del);
 
