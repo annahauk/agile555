@@ -31,11 +31,3 @@ Project structure (frontend-focused)
 
 Notes
 - The project uses a small runtime template loader to fetch `.html` templates. This avoids the need for a Vite HTML plugin.
-- The backend, database persistence, and TODO list features are placeholders for now.
-
-Contributing
-- Open an issue or pull request. Keep changes small and focused. If you add build-time HTML imports, include Vite plugin instructions in this README.
-
-License
-- MIT
-# agile555
