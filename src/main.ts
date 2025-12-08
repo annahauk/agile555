@@ -170,6 +170,9 @@ async function loadTodos(): Promise<TodoItem[]> {
 }
 
 async function saveTodos(items: TodoItem[]): Promise<void> {
+  // streak hook
+  await STREAK.add(`Todo`);
+
   for(const item of items) {
     let update = await TodoDB.updateOne({id: item.id}, item);
 
