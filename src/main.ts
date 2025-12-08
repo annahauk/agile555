@@ -96,13 +96,13 @@ function applyTimeOfDayTheme(){
   try{
     const now = new Date();
     const h = now.getHours();
-    // 6:00 - 14:59 => day; 15:00 - 19:59 => sunset; 20:00 - 5:59 => night
+    // 6:00 - 14:59 => day; 17:00 - 19:59 => sunset; 20:00 - 5:59 => night
     let nav = '#b3eee6'
     let bg = "url('/src/assets/pond-bg-day.png') center/cover no-repeat fixed"
-    if(h >= 6 && h < 15){
+    if(h >= 6 && h < 17){
       nav = '#b3eee6'
       bg = "url('/src/assets/pond-bg-day.png') center/cover no-repeat fixed"
-    } else if(h >= 15 && h < 20){
+    } else if(h >= 17 && h < 20){
       nav = '#a399b1'
       bg = "url('/src/assets/pond-bg-Sunset.png') center/cover no-repeat fixed"
     } else {
@@ -112,7 +112,7 @@ function applyTimeOfDayTheme(){
     document.documentElement.style.setProperty('--nav-bg', nav)
     document.documentElement.style.setProperty('--pond-bg-image', bg)
     // brand text color: dark for day, white for sunset/night
-    const brandColor = (h >= 6 && h < 15) ? '#053f3d' : '#ffffff'
+    const brandColor = (h >= 6 && h < 17) ? '#053f3d' : '#ffffff'
     document.documentElement.style.setProperty('--brand-color', brandColor)
   }catch(e){
     console.warn('Failed to apply time-of-day theme', e)
