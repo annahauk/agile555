@@ -121,7 +121,35 @@ function applyTimeOfDayTheme(){
 
 // apply immediately and refresh every minute in case the user crosses a threshold
 applyTimeOfDayTheme()
-setInterval(applyTimeOfDayTheme, 60 * 1000)
+// setInterval(applyTimeOfDayTheme, 60 * 1000)
+let setTime = function(time: number) {
+  try {
+    const now = /* @__PURE__ */
+    new Date();
+    const h = now.getHours();
+    let nav = "#b3eee6";
+    let bg = "url('/src/assets/pond-bg-day.png') center/cover no-repeat fixed";
+    if (time === 1) {
+      nav = "#b3eee6";
+      bg = "url('/src/assets/pond-bg-day.png') center/cover no-repeat fixed";
+    } else if (time === 2) {
+      nav = "#a399b1";
+      bg = "url('/src/assets/pond-bg-Sunset.png') center/cover no-repeat fixed";
+    } else if (time == 3) {
+      nav = "#2b366b";
+      bg = "url('/src/assets/pond-bg-night.png') center/cover no-repeat fixed";
+    }
+    document.documentElement.style.setProperty("--nav-bg", nav);
+    document.documentElement.style.setProperty("--pond-bg-image", bg);
+    const brandColor = time == 1 ? "#053f3d" : "#ffffff";
+    document.documentElement.style.setProperty("--brand-color", brandColor);
+  } catch (e) {
+    console.warn("Failed to apply time-of-day theme", e);
+  }
+}
+document.addEventListener('keydown', (e) => {if (e.key === '1') { setTime(1) }})
+document.addEventListener('keydown', (e) => {if (e.key === '2') { setTime(2) }})
+document.addEventListener('keydown', (e) => {if (e.key === '3') { setTime(3) }})
 
 const viewRoot = document.getElementById('view-root')!
 const navButtons = Array.from(document.querySelectorAll('.nav-btn')) as HTMLButtonElement[]
