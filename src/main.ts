@@ -170,6 +170,9 @@ async function loadTodos(): Promise<TodoItem[]> {
 }
 
 async function saveTodos(items: TodoItem[]): Promise<void> {
+  // streak hook
+  await STREAK.add(`Todo`);
+
   for(const item of items) {
     let update = await TodoDB.updateOne({id: item.id}, item);
 
@@ -740,6 +743,9 @@ export async function mountNotes() {
         note.content = body.innerText ?? '';
         note.updatedAt = Date.now();
         await notesdb.updateOne({ _id: note._id }, note);
+
+        // add to streak
+        await STREAK.add("Notes");
       });
 
       btnDelete.addEventListener('click', async () => {
@@ -779,7 +785,7 @@ function formatSeconds(s:number){
   return `${mm}:${ss}`
 }
 
-function navigate(route:Route){
+async function navigate(route:Route){
   // update nav active states
   navButtons.forEach(b=>{
     if(b.dataset.route === route) b.classList.add('active')
@@ -797,8 +803,18 @@ function navigate(route:Route){
         month: "long",
         day: "numeric"
       });
-      const dateE1 = document.getElementById("date-display")
-      if (dateE1) dateE1.textContent = formatted;
+      const dateE1 = document.getElementById("date-display");
+
+      let streak_text;
+      if(await STREAK.wasLost()) {
+        // streak lost, display lost message / apply class
+        streak_text = `Started a new streak!`;
+      } else {
+        // streak maintained, display with emoji
+        streak_text = `${await STREAK.getLength()} day streak! 🔥`;
+      }
+
+      if (dateE1) dateE1.textContent = `${formatted} -- ${streak_text}`;
       break
 
     case '#/pomodoro':

@@ -1,3 +1,5 @@
+import { STREAK } from "../main";
+
 export function mountAffirmations() {
   const container = document.querySelector('.card.placeholder') as HTMLElement;
   if (!container) return;
@@ -29,7 +31,10 @@ export function mountAffirmations() {
   `;
 
   const newBtn = document.getElementById('new-affirmation')!;
-  newBtn.addEventListener('click', () => {
+  newBtn.addEventListener('click', async () => {
+    // add to streak
+    await STREAK.add("Affirmation");
+
     const another = affirmations[Math.floor(Math.random() * affirmations.length)];
     container.querySelector('p')!.textContent = another;
   });
