@@ -740,6 +740,9 @@ export async function mountNotes() {
         note.content = body.innerText ?? '';
         note.updatedAt = Date.now();
         await notesdb.updateOne({ _id: note._id }, note);
+
+        // add to streak
+        await STREAK.add("Notes");
       });
 
       btnDelete.addEventListener('click', async () => {
@@ -802,7 +805,7 @@ async function navigate(route:Route){
       let streak_text;
       if(await STREAK.wasLost()) {
         // streak lost, display lost message / apply class
-        streak_text = `Streak lost :(`;
+        streak_text = `Started a new streak!`;
       } else {
         // streak maintained, display with emoji
         streak_text = `${await STREAK.getLength()} day streak! 🔥`;

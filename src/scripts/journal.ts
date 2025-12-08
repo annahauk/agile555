@@ -3,6 +3,7 @@ import { LsDb, WithId } from "../lib/db";
 import { date_formatter } from "../lib/utils";
 
 import "../styles/components/home.css";
+import { STREAK } from "../main";
 
 export interface Journal {
     last_opened: string | null; //_id
@@ -109,6 +110,9 @@ export async function MountJournal(): Promise<any> {
 
         // update last opened
         await jdb.updateOne({key: JOURNAL_BASE_KEY}, {last_opened: j._id});
+
+        // update streak
+        await STREAK.add("Journal");
     }
 
     /**
